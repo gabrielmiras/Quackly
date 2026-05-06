@@ -148,24 +148,23 @@ dinheiro sozinho. */
     border-color: #444; /* Borda fica mais escura depois do mouse */
 }
 
-
-/*Define o tamanho que vai ocupar na tela do pato e cards */
+/* Define o novo tamanho máximo que a imagem vai ocupar */
 .image-wrapper {
-    position: relative; /* Posicionamento img */
-    max-width: 450px; 
+    position: relative;
+    max-width: 500px; /* Aumentado de 450px para 520px */
     margin-right: auto;
-    margin-left: 0;
+    margin-left: 0; 
 }
 
-/* Imagem principal do pato com sombra e cantos arredondados */
+/* Aplicamos o deslocamento e mantemos o tamanho fluido */
 .main-duck-img {
     width: 100%; 
     border-radius: 40px; 
-    background-color: #1a1a1a; 
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); 
     display: block;
     position: relative;
-    z-index: 1; /* Mantém a imagem acima de elementos de fundo */
+    z-index: 1;
+    padding: 0px;
+    left: -60px; /* Desloca o celular para a esquerda sem mover os cards */
 }
 
 /* Cartões flutuantes  */
@@ -302,36 +301,11 @@ dinheiro sozinho. */
 
 
 
-
-/*CARD DO BOOTSTRAP GAMIFICAÇÃO*/
+/*CARD DO GRÁFICO*/
 /* Container Gamificação*/
 .hero-transaction-section {
     overflow: hidden; /* Garante que nada saia dessa seção */
 }
-
-.hero-image-container {
-    position: relative;
-    width: 450px;
-    max-width: 100%; 
-    margin-left: auto;
-    margin-right: auto;
-    align-items: center;       
-}
-
-
-
-/* Imagem principal do card Gamificação */
-.hero-main-img {
-    width: 100%;
-    aspect-ratio: 1 / 1; /* Obriga a imagem a ser um quadrado perfeito */
-    object-fit: contain; /* MOSTRA A IMAGEM INTEIRA sem cortar nada */
-    background-color: #152033; /* Cor do fundo da imagem , diferente do body */
-    padding: 20px; 
-    border-radius: 40px;
-    display: block;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-}
-
 /* Título card gamificação*/
 .hero-display-title {
     font-size: clamp(2.5rem, 5vw, 3.8rem);
@@ -367,41 +341,15 @@ dinheiro sozinho. */
     box-shadow: 0 10px 20px rgba(0,0,0,0.2);
     color: #000; /* Garante que o texto continue preto no hover */
 }
-
-/*Carrosel de imagens do card gamificação*/
-
-
-/* Container do carrossel com os mesmos estilos da sua imagem principal */
-.hero-carousel-inner {
-    width: 100%;
-    aspect-ratio: 1 / 1; /* Obriga o site a ter o formato de um quadrado perfeito */
-    background-color: #152033; /* Cor de fundo igual à do card */
-    padding: 20px; 
-    border-radius: 40px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    overflow: hidden; /* Necessário para manter o border-radius nos slides */
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Imagem card grafico */
+.hero-notebook-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-/* Garante que a imagem ocupe o espaço corretamente dentro do slide */
-.hero-carousel-inner .carousel-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain; /* MOSTRA A IMAGEM INTEIRA sem cortar nada */
-}
-.hero-carousel-img {
-    width: 100% !important;
-    height: 100% !important;
-    aspect-ratio: 1 / 1; /* Mantém o quadrado perfeito */
-    object-fit: contain; /* Exibe a imagem inteira sem esticar */
-    object-position: center; /* Centraliza a imagem */
-    background-color: #152033; /* Mesma cor de fundo do seu site */
-    padding: 20px;
-    border-radius: 40px; /* Bordas arredondadas */
-    
-}
 
 /* SEÇÃO DE BENEFÍCIOS  */
 
@@ -764,248 +712,32 @@ dinheiro sozinho. */
     }
 }
 /*-------------------------------------------------------------------------------------------------------------*/
-
-/* Ajustes para telas muito pequenas (celulares) */
-@media (max-width: 480px) {
-    /* Navbar */
-    .navbar-quackly {
-        border-radius: 15px; /* Bordas ainda menores */
-        padding: 8px 15px; /* Padding reduzido */
-        margin: 10px auto; /* Margem menor */
-    }
-
-    .navbar-brand {
-        font-size: 1.2rem; /* Fonte menor */
-    }
-
-    .navbar-logo {
-        width: 25px; /* Logo menor */
-        height: 25px;
-    }
-
-    .nav-link {
-        font-size: 1rem; /* Links menores */
-        margin: 0 8px;
-    }
-
-    .btn-entrar {
-        padding: 6px 16px; /* Botão menor */
-        font-size: 0.9rem;
-    }
-
-    /* Hero section */
-    .hero-section {
-        padding: 50px 0 30px; /* Padding reduzido */
-        margin-top: 80px; /* Margem superior menor */
-        margin-bottom: 80px;
-    }
-
-    .hero-title {
-        font-size: 1.8rem; /* Título menor */
-        margin-bottom: 16px;
-    }
-
-    .btn-primary-custom {
-        padding: 10px 20px; /* Botão menor */
-        font-size: 0.9rem;
-    }
-
-    /* Feature cards */
-    .feature-card {
-        padding: 20px 15px; /* Padding menor */
-    }
-
-    /* Transaction section - imagem do pato e cards */
+/* Ajustes para telas menores (Tablets e Celulares) */
+@media (max-width: 991px) {
     .image-wrapper {
-        max-width: 300px; /* Imagem menor */
-        position: relative;
+        max-width: 100%;
+        margin: 0 auto;
     }
 
+    /* Remove o deslocamento da imagem no mobile para não estourar a tela */
     .main-duck-img {
-        width: 100%;
-        border-radius: 20px; /* Bordas menores para telas pequenas */
+        left: 0;
+        margin: 0 auto; /* Centraliza a imagem do celular */
+        max-width: 320px; /* Define um tamanho adequado para telas pequenas */
     }
 
+    /* Ajusta os cards para não ultrapassarem a tela */
     .floating-card {
-        position: static; /* Muda para posicionamento normal para empilhar */
-        width: 100%; /* Largura total */
-        margin-top: 15px; /* Espaço entre cards */
-        right: auto; /* Remove posicionamento absoluto */
+        position: relative; /* Muda de absoluto para relativo */
+        right: auto !important;
+        margin: 15px auto; /* Centraliza os cards ou dá espaçamento vertical */
+        width: 85%; /* Faz o card ocupar uma boa parte da tela do celular */
         top: auto;
-        animation: none; /* Remove animação para evitar problemas */
     }
 
-    .card-icon {
-        width: 28px; /* Ícones menores */
-        height: 28px;
-        font-size: 0.9rem;
-    }
-
-    .card-title, .card-value {
-        font-size: 0.8rem; /* Texto menor */
-    }
-
-    .card-subtitle {
-        font-size: 0.7rem;
-    }
-
-    .section-display-title {
-        font-size: 1.8rem; /* Título menor */
-        margin-top: 40px;
-    }
-
-    .section-description {
-        font-size: 1rem; /* Descrição menor */
-        margin-bottom: 24px;
-    }
-
-    .btn-white-pill {
-        padding: 10px 24px; /* Botão menor */
-        font-size: 0.9rem;
-    }
-
-    /* Gamificação */
-    .hero-display-title {
-        font-size: 2rem; /* Título menor */
-    }
-
-    .hero-description {
-        font-size: 1rem; /* Descrição menor */
-        margin-bottom: 24px;
-    }
-
-    .hero-btn-pill {
-        padding: 12px 24px; /* Botão menor */
-        font-size: 0.9rem;
-    }
-
-    .hero-main-img {
-        padding: 15px; /* Padding menor */
-    }
-
-    /* Pricing */
-    .pricing {
-        padding: 3rem 0; /* Padding menor */
-    }
-
-    .pricing-card {
-        padding: 1.5rem; /* Padding menor */
-    }
-
-    .price {
-        font-size: 2rem; /* Preço menor */
-    }
-
-    .features-list li {
-        font-size: 0.9rem; /* Lista menor */
-    }
-
-    .btn-block {
-        padding: 0.8rem; /* Botão menor */
-        font-size: 0.9rem;
-    }
-
-    /* Footer */
-    .footer {
-        padding: 2rem 0 1rem; /* Padding menor */
-        margin-top: 3rem;
-    }
-
-    .footer-content {
-        grid-template-columns: 1fr; /* Uma coluna */
-        gap: 1.5rem;
-    }
-
-    .footer-section h4 {
-        font-size: 0.9rem; /* Título menor */
-    }
-
-    .footer-section a, .footer-section p {
-        font-size: 0.8rem; /* Texto menor */
-    }
-
-    .social-icon {
-        width: 2rem; /* Ícones menores */
-        height: 2rem;
-        font-size: 0.8rem;
-    }
-
-    /* Moedas */
-    .coin {
-        font-size: 20px; /* Moedas menores */
-    }
-}
-
-/* Ajustes para telas pequenas (tablets e celulares médios) */
-@media (max-width: 576px) {
-    .hero-section {
-        margin-top: 100px; /* Margem intermediária */
-        margin-bottom: 100px;
-    }
-
-    .floating-card {
-        position: static; /* Empilha os cards */
-        width: 100%;
-        margin-top: 15px;
+    /* Remove o espaçamento de delay no mobile para aparecerem juntos ou em ordem */
+    .card-1, .card-2, .card-3 {
+        animation: none; /* Se preferir, pode remover a animação no mobile */
         right: auto;
-        top: auto;
-        animation: none;
-    }
-
-    .section-display-title {
-        font-size: 2rem;
-    }
-
-    .hero-display-title {
-        font-size: 2.2rem;
-    }
-
-    .pricing-grid {
-        grid-template-columns: 1fr; /* Uma coluna */
-    }
-}
-
-/* Ajustes para telas médias (tablets grandes) */
-@media (max-width: 768px) {
-    .hero-section {
-        margin-top: 120px;
-        margin-bottom: 120px;
-    }
-
-    .floating-card {
-        width: 220px;
-        right: -50px; /* Ajusta para não sair tanto da tela */
-    }
-
-    .section-display-title {
-        font-size: 2.2rem;
-    }
-
-    .hero-display-title {
-        font-size: 2.5rem;
-    }
-}
-
-/* Ajustes para telas grandes (desktops) */
-@media (min-width: 1200px) {
-    .hero-section {
-        margin-top: 200px; /* Mais espaço em telas grandes */
-        margin-bottom: 200px;
-    }
-
-    .floating-card {
-        width: 280px; /* Cartões maiores */
-    }
-
-    .section-display-title {
-        font-size: 3.2rem; /* Título maior */
-    }
-
-    .hero-display-title {
-        font-size: 4rem;
-    }
-
-    .pricing-grid {
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Colunas maiores */
     }
 }
