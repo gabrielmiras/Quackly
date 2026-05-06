@@ -2,7 +2,7 @@
 @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css");
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Reset básico e definição da fonte global */
+/* Fonte global do login */
 * {
     margin: 0;
     padding: 0;
@@ -10,7 +10,7 @@
     font-family: 'Inter', sans-serif;
 }
 
-/* Layout centralizado da tela de login */
+/* Layout centralizado */
 body {
     background-color: #0f172a;
     color: #ffffff;
@@ -21,7 +21,7 @@ body {
     padding: 24px;
 }
 
-/* Estilo do cartão principal do login */
+/* Card central */
 .login-card {
     background-color: #162238;
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -35,7 +35,7 @@ body {
     align-items: center;
 }
 
-/* Área de marca com logo e título */
+/* Logo e título */
 .brand-area {
     display: flex;
     flex-direction: column;
@@ -54,7 +54,7 @@ body {
     margin-bottom: 16px;
 }
 
-/* Título principal da marca */
+/* Título principal  */
 .brand-area h2 {
     font-size: 1.6rem;
     font-weight: 700;
@@ -62,7 +62,7 @@ body {
     margin-bottom: 8px;
 }
 
-/* Texto de apoio abaixo do título */
+/* Texto abaixo do título */
 .brand-area p {
     font-size: 1.1rem;
     font-weight: 600;
@@ -76,7 +76,7 @@ body {
     align-items: center;
 }
 
-/* Botões de login social */
+/* Botões de login social / google e facebook*/
 .btn-social {
     width: 100%;
     padding: 14px;
@@ -95,8 +95,123 @@ body {
     transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-/* Hover leve nos botões sociais */
+/* Hover botões sociais */
 .btn-social:hover {
     background-color: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Linha entre os métodos de login */
+.divider {
+    width: 100%;
+    text-align: center;
+    position: relative;
+    margin: 16px 0;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.divider::before, .divider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background-color: #334155;
+}
+
+.divider::before { left: 0; }
+.divider::after { right: 0; }
+
+form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+/* Destaque para os campos obrigatórios */
+.form-group label span {
+    color: #eab308;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 16px;
+    background-color: #0d1624;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.form-group input:focus {
+    border-color: #fbbf24;
+}
+
+
+/* Recuperar minha senha */
+.forgot-password {
+    align-self: flex-start;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    margin-top: -4px;
+    margin-bottom: 4px;
+}
+
+.forgot-password:hover {
+    color: #ffffff;
+}
+
+/* Botão de envio do formulário */
+.btn-submit {
+    background-color: #eab308;
+    color: #000000;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: filter 0.2s ease;
+    display: block;
+    width: 100%; 
+    text-decoration: none;
+    text-align: center;
+    box-sizing: border-box; 
+}
+
+/* Botões */
+.btn-group {
+    display: flex;
+    flex-direction: column; 
+    gap: 12px; 
+    margin-top: 16px;
+}
+
+.btn-submit:hover {
+    filter: brightness(0.9);
+}
+
+/* Texto do rodapé com link para a tela de cadastro */
+.footer-text {
+    margin-top: 28px;
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+.footer-text .toggle-link {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.footer-text .toggle-link:hover {
+    text-decoration: underline;
 }
