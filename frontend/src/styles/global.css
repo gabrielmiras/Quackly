@@ -1365,7 +1365,7 @@ img {
    -------------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------------
-   4.5 Histórico (CRUD de produtos)
+   4.5 Histórico (movimentações financeiras)
    -------------------------------------------------------------------------- */
 .hist-page { color: #1e293b; }
 .hist-layout { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); gap: 24px; align-items: start; }
@@ -1376,8 +1376,8 @@ img {
 .hist-panel__title span { margin-left: 6px; color: #64748b; font-size: .9rem; font-weight: 500; }
 .hist-form { display: grid; gap: 16px; }
 .hist-form .qk-field label { color: #334155; }
-.hist-form .qk-field input, .hist-search input { width: 100%; padding: 11px 12px; border: 1px solid #cbd5e1; border-radius: 10px; color: #1e293b; background: #fff; }
-.hist-form .qk-field input:focus, .hist-search input:focus { outline: 3px solid rgba(255, 203, 97, .35); border-color: #d79a16; }
+.hist-form .qk-field input, .hist-form .qk-field select, .hist-search input { width: 100%; padding: 11px 12px; border: 1px solid #cbd5e1; border-radius: 10px; color: #1e293b; background: #fff; }
+.hist-form .qk-field input:focus, .hist-form .qk-field select:focus, .hist-search input:focus { outline: 3px solid rgba(255, 203, 97, .35); border-color: #d79a16; }
 .hist-form__actions { display: grid; gap: 10px; margin-top: 4px; }
 .hist-form__actions .qk-btn--submit { margin: 0; cursor: pointer; }
 .hist-form__actions .qk-btn--outline { width: 100%; color: #334155; border-color: #cbd5e1; cursor: pointer; }
@@ -1391,6 +1391,13 @@ img {
 .hist-table td { padding: 14px 10px; border-bottom: 1px solid #f1f5f9; color: #334155; font-size: .9rem; }
 .hist-table tbody tr:last-child td { border-bottom: 0; }
 .hist-table__row--editing { background: #fffbeb; }
+.hist-type { display: inline-flex; margin-right: 9px; padding: 4px 9px; border-radius: 999px; font-size: .72rem; font-weight: 700; }
+.hist-type--entrada { color: #166534; background: #dcfce7; }
+.hist-type--saida { color: #9f1239; background: #ffe4e6; }
+.hist-description { color: #1e293b; font-weight: 600; }
+.hist-amount { font-weight: 700; white-space: nowrap; }
+.hist-amount--entrada { color: #15803d; }
+.hist-amount--saida { color: #be123c; }
 .hist-row-actions { display: flex; gap: 7px; }
 .hist-row-actions .qk-btn--action { padding: 7px 10px; font-size: .8rem; }
 .hist-row-actions .hist-btn--delete { background: #fff; color: #b91c1c; border: 1px solid #fecaca; }
