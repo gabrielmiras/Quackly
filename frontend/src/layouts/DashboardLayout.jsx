@@ -8,8 +8,19 @@ import logo from '../assets/logo-quackly.png';
  * - A sidebar ocupa a altura total da página (ver .qk-sidebar no global.css).
  * - O header é sticky, então continua visível durante o scroll.
  */
-function DashboardLayout({ children, userName = 'Usuário 1' }) {
+function DashboardLayout({ children, userName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Pega o nome do usuário salvo no login (se houver)
+  const usuarioSalvo = (() => {
+    try {
+      return JSON.parse(localStorage.getItem('usuarioLogado'));
+    } catch {
+      return null;
+    }
+  })();
+
+  const nomeExibicao = userName || usuarioSalvo?.nome || 'Usuário 1';
 
   return (
     <div className="dash-page">
@@ -32,7 +43,7 @@ function DashboardLayout({ children, userName = 'Usuário 1' }) {
             </Link>
           </div>
           <div className="dash-header__user">
-            <span>{userName}</span>
+            <span>{nomeExibicao}</span>
             <div className="dash-header__avatar">
               <i className="bi bi-person-circle"></i>
             </div>

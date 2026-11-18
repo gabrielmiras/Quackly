@@ -25,9 +25,24 @@ function Login() {
   const handleSubmit = (event) => {
     event.preventDefault();
     if (!validate()) return;
-    // Sem backend real por enquanto: apenas simula o login.
-    console.log('Login mockado:', form);
-    navigate('/gestao#gerenciamento');
+
+    fetch('http://localhost:8080/usuarios/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: form.email, senha: form.password }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Credenciais inválidas');
+        return res.json();
+      })
+      .then((usuarioLogado) => {
+        console.log('Login efetuado com sucesso:', usuarioLogado);
+        localStorage.setItem('usuarioLogado', JSON.stringify(usuarioLogado));
+        navigate('/gestao#gerenciamento');
+      })
+      .catch(() => {
+        setErrors({ password: 'E-mail ou senha incorretos.' });
+      });
   };
 
   return (
