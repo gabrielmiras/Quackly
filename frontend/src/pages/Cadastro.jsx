@@ -39,9 +39,23 @@ function Cadastro() {
   const handleSubmit = (event) => {
     event.preventDefault();
     if (!validate()) return;
-    // Sem backend real por enquanto: apenas simula o cadastro.
-    console.log('Cadastro mockado:', form);
-    navigate('/login');
+
+    fetch('http://localhost:8080/usuarios', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome: form.name, email: form.email, senha: form.password }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((criado) => {
+        console.log('Cadastro realizado:', criado);
+        navigate('/login');
+      })
+      .catch(() => {
+        setErrors({ email: 'Erro ao cadastrar. Tente novamente.' });
+      });
   };
 
   return (
