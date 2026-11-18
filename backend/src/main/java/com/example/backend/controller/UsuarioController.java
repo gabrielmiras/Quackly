@@ -3,6 +3,8 @@ package com.example.backend.controller;
 import com.example.backend.model.Usuario;
 import com.example.backend.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -42,5 +44,15 @@ public class UsuarioController {
     @GetMapping("/{id}")
     public Usuario buscar(@PathVariable Long id) {
         return usuarioService.buscarPorId(id);
+    }
+
+    // POST — login
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Usuario usuario) {
+        Usuario usuarioAutenticado = usuarioService.login(usuario.getEmail(), usuario.getSenha());
+        if (usuarioAutenticado != null) {
+            return ResponseEntity.ok(usuarioAutenticado);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("E-mail ou senha incorretos.");
     }
 }
