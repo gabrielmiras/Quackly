@@ -53,6 +53,7 @@ src/
 | `/cadastro` | Criar conta |
 | `/aprendizado` | Questionários |
 | `/gestao` | Gerenciamento e Metas |
+| `/historico` | Entradas e Saídas |
 
 ---
 
