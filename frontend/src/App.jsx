@@ -5,6 +5,7 @@ import Login from './pages/Login.jsx';
 import Cadastro from './pages/Cadastro.jsx';
 import Aprendizado from './pages/Aprendizado.jsx';
 import Gestao from './pages/Gestao.jsx';
+import Historico from './pages/Historico.jsx';
 
 /**
  * O React Router troca a URL via pushState, e o navegador NÃO rola até a âncora (#metas)
@@ -37,6 +38,7 @@ function App() {
         <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/aprendizado" element={<Aprendizado />} />
         <Route path="/gestao" element={<Gestao />} />
+        <Route path="/historico" element={<Historico />} />
       </Routes>
     </>
   );

@@ -6,6 +6,7 @@ const NAV_GROUPS = [
     links: [
       { to: '/gestao', hash: '#gerenciamento', icon: 'bi-pie-chart', text: 'Gerenciamento', isDefault: true },
       { to: '/gestao', hash: '#metas', icon: 'bi-trophy', text: 'Metas' },
+      { to: '/historico', hash: '', icon: 'bi-clock-history', text: 'Histórico', isDefault: true },
     ],
   },
   {
@@ -42,7 +43,7 @@ function Sidebar({ isOpen = false, onClose }) {
                 <b>{group.label}</b>
                 <ul>
                   {group.links.map((link) => (
-                    <li key={link.hash}>
+                    <li key={link.to + link.hash}>
                       <Link
                         to={`${link.to}${link.hash}`}
                         className={isActive(link) ? 'is-active' : ''}
