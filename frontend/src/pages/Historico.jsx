@@ -4,18 +4,55 @@ import FormInput from '../components/FormInput.jsx';
 import DashboardLayout from '../layouts/DashboardLayout.jsx';
 import historicoService from '../services/historicoService.js';
 
-const FORM_VAZIO = { tipo: 'ENTRADA', valor: '', nome: '' };
+function agoraLocal() {
+  const data = new Date();
+  const doisDigitos = (valor) => String(valor).padStart(2, '0');
+  return `${data.getFullYear()}-${doisDigitos(data.getMonth() + 1)}-${doisDigitos(data.getDate())}T${doisDigitos(data.getHours())}:${doisDigitos(data.getMinutes())}:${doisDigitos(data.getSeconds())}`;
+}
+
+const FORM_VAZIO = { tipo: 'ENTRADA', valor: '', nome: '', dataHora: '' };
+
+function formatarDataHora(valor) {
+  if (!valor) return '—';
+  const data = new Date(valor);
+  if (Number.isNaN(data.getTime())) return '—';
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
+  }).format(data).replace(',', ' às');
+}
+
+function ordenarPorData(movimentacoes) {
+  return [...movimentacoes].sort((a, b) => String(b.dataHora || '').localeCompare(String(a.dataHora || '')));
+}
 
 function Historico() {
   const [movimentacoes, setMovimentacoes] = useState([]);
-  const [form, setForm] = useState(FORM_VAZIO);
+  const [form, setForm] = useState(() => ({ ...FORM_VAZIO, dataHora: agoraLocal() }));
   const [editandoId, setEditandoId] = useState(null);
   const [busca, setBusca] = useState('');
   const [aviso, setAviso] = useState('');
+  const [agora, setAgora] = useState(agoraLocal);
+  const [dataHoraAlterada, setDataHoraAlterada] = useState(false);
 
   useEffect(() => {
-    historicoService.listar().then(setMovimentacoes).catch(() => setAviso('Não foi possível carregar as movimentações.'));
+    historicoService.listar().then((dados) => {
+      setMovimentacoes(ordenarPorData(dados));
+      if (historicoService.usandoFallbackLocal()) {
+        setAviso('API indisponível. As movimentações ficam salvas neste navegador.');
+      }
+    }).catch(() => setAviso('Não foi possível carregar as movimentações.'));
   }, []);
+
+  useEffect(() => {
+    const intervalo = window.setInterval(() => setAgora(agoraLocal()), 1000);
+    return () => window.clearInterval(intervalo);
+  }, []);
+
+  useEffect(() => {
+    if (editandoId === null && !dataHoraAlterada) {
+      setForm((atual) => ({ ...atual, dataHora: agora }));
+    }
+  }, [agora, dataHoraAlterada, editandoId]);
 
   const filtradas = useMemo(() => movimentacoes.filter((item) => {
     const nome = item.nome?.trim() || (item.tipo === 'ENTRADA' ? 'Entrada' : 'Saída');
@@ -25,25 +62,33 @@ function Historico() {
 
   function alterarCampo(event) {
     setForm((atual) => ({ ...atual, [event.target.name]: event.target.value }));
+    if (event.target.name === 'dataHora') setDataHoraAlterada(true);
   }
 
   function limparFormulario() {
-    setForm(FORM_VAZIO);
+    setForm({ ...FORM_VAZIO, dataHora: agoraLocal() });
     setEditandoId(null);
+    setDataHoraAlterada(false);
   }
 
   async function enviarFormulario(event) {
     event.preventDefault();
     setAviso('');
-    const dados = { ...form, nome: form.nome.trim(), valor: Number(form.valor) };
+    const dataHora = editandoId !== null || dataHoraAlterada ? form.dataHora : null;
+    if (dataHora && dataHora > agoraLocal()) {
+      setAviso('A data e hora não podem estar no futuro.');
+      return;
+    }
+    const dados = { ...form, nome: form.nome.trim(), valor: Number(form.valor), dataHora };
     try {
       if (editandoId === null) {
         const criada = await historicoService.criar(dados);
-        setMovimentacoes((atuais) => [...atuais, criada]);
-        setAviso(`${criada.nome || (criada.tipo === 'ENTRADA' ? 'Entrada' : 'Saída')} registrada.`);
+        setMovimentacoes((atuais) => ordenarPorData([...atuais, criada]));
+        const modoLocal = historicoService.usandoFallbackLocal() ? ' Salva neste navegador.' : '';
+        setAviso(`${criada.nome || (criada.tipo === 'ENTRADA' ? 'Entrada' : 'Saída')} registrada.${modoLocal}`);
       } else {
         const atualizada = await historicoService.atualizar(editandoId, dados);
-        setMovimentacoes((atuais) => atuais.map((item) => item.id === editandoId ? atualizada : item));
+        setMovimentacoes((atuais) => ordenarPorData(atuais.map((item) => item.id === editandoId ? atualizada : item)));
         setAviso('Movimentação atualizada.');
       }
       limparFormulario();
@@ -53,8 +98,9 @@ function Historico() {
   }
 
   function iniciarEdicao(item) {
-    setForm({ nome: item.nome || '', tipo: item.tipo, valor: String(item.valor) });
+    setForm({ nome: item.nome || '', tipo: item.tipo, valor: String(item.valor), dataHora: item.dataHora?.slice(0, 19) || agoraLocal() });
     setEditandoId(item.id);
+    setDataHoraAlterada(true);
     setAviso('');
   }
 
@@ -88,6 +134,7 @@ function Historico() {
                   <option value="SAIDA">Saída</option>
                 </select>
               </div>
+              <FormInput id="hist-data-hora" label="Data e Hora" name="dataHora" type="datetime-local" step="1" max={agora} required value={form.dataHora} onChange={alterarCampo} />
               <FormInput id="hist-valor" label="Valor (R$)" name="valor" type="number" min="0.01" step="0.01" required value={form.valor} onChange={alterarCampo} placeholder="0,00" />
               <FormInput id="hist-nome" label="Nome / Descrição" name="nome" value={form.nome} onChange={alterarCampo} placeholder="Ex.: Salário, Mercado, Aluguel (opcional)" />
               <div className="hist-form__actions">
@@ -111,13 +158,14 @@ function Historico() {
             ) : (
               <div className="hist-table-wrap">
                 <table className="hist-table">
-                  <thead><tr><th>Movimentação</th><th>Valor</th><th>Ações</th></tr></thead>
+                  <thead><tr><th>Movimentação</th><th>Data e hora</th><th>Valor</th><th>Ações</th></tr></thead>
                   <tbody>{filtradas.map((item) => {
                     const entrada = item.tipo === 'ENTRADA';
                     const nome = item.nome?.trim() || (entrada ? 'Entrada' : 'Saída');
                     return (
                       <tr key={item.id} className={item.id === editandoId ? 'hist-table__row--editing' : ''}>
                         <td data-label="Movimentação"><span className={`hist-type hist-type--${entrada ? 'entrada' : 'saida'}`}>{entrada ? 'Entrada' : 'Saída'}</span><strong className="hist-description">{nome}</strong></td>
+                        <td data-label="Data e hora">{formatarDataHora(item.dataHora)}</td>
                         <td data-label="Valor"><span className={`hist-amount hist-amount--${entrada ? 'entrada' : 'saida'}`}>{entrada ? '+' : '−'} R$ {Number(item.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></td>
                         <td data-label="Ações"><div className="hist-row-actions">
                           <Button variant="action" onClick={() => iniciarEdicao(item)}><i className="bi bi-pencil" aria-hidden="true"></i><span>Editar</span></Button>
