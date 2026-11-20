@@ -74,7 +74,7 @@ function Historico() {
   async function enviarFormulario(event) {
     event.preventDefault();
     setAviso('');
-    const dataHora = editandoId !== null || dataHoraAlterada ? form.dataHora : null;
+    const dataHora = form.dataHora;
     if (dataHora && dataHora > agoraLocal()) {
       setAviso('A data e hora não podem estar no futuro.');
       return;

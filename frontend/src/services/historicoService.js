@@ -1,103 +1,99 @@
 const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '');
 const ENDPOINT = `${BASE_URL}/movimentacoes`;
-const STORAGE_KEY = 'quackly-movimentacoes';
-let fallbackLocal = false;
 
-function lerLocal() {
-  try {
-    const dados = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    return Array.isArray(dados) ? dados : [];
-  } catch {
-    return [];
+function obterIdUsuario() {
+  const usuario = JSON.parse(localStorage.getItem('usuarioLogado') || 'null');
+
+  if (!usuario?.id) {
+    throw new Error('Usuário não identificado. Faça login novamente.');
   }
+
+  return usuario.id;
 }
 
-function salvarLocal(movimentacoes) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(movimentacoes));
-  } catch {
-    return;
-  }
+function converterParaFrontend(movimentacao) {
+  return {
+    id: movimentacao.idMovimentacao,
+    tipo: movimentacao.tipoMovimentacao === 'Entrada' ? 'ENTRADA' : 'SAIDA',
+    valor: movimentacao.valor,
+    nome: movimentacao.nome,
+    dataHora: movimentacao.data,
+  };
 }
 
-function ordenarPorData(movimentacoes) {
-  return [...movimentacoes].sort((a, b) => String(b.dataHora || '').localeCompare(String(a.dataHora || '')));
+function converterParaBackend(movimentacao) {
+  return {
+    idUsuario: obterIdUsuario(),
+    tipoMovimentacao: movimentacao.tipo === 'ENTRADA' ? 'Entrada' : 'Saida',
+    valor: Number(movimentacao.valor),
+    nome: movimentacao.nome.trim(),
+    data: movimentacao.dataHora,
+  };
 }
 
-function dataHoraAtual() {
-  const data = new Date();
-  const doisDigitos = (valor) => String(valor).padStart(2, '0');
-  return `${data.getFullYear()}-${doisDigitos(data.getMonth() + 1)}-${doisDigitos(data.getDate())}T${doisDigitos(data.getHours())}:${doisDigitos(data.getMinutes())}:${doisDigitos(data.getSeconds())}`;
-}
-
-async function requisitar(path = '', options) {
+async function requisitar(path = '', options = {}) {
   const response = await fetch(`${ENDPOINT}${path}`, options);
+
   if (!response.ok) {
     const error = new Error(`HTTP ${response.status}`);
     error.status = response.status;
     throw error;
   }
-  return response.status === 204 ? null : response.json();
-}
 
-async function comFallbackLocal(acaoApi, acaoLocal) {
-  if (fallbackLocal) return acaoLocal();
-  try {
-    return await acaoApi();
-  } catch (error) {
-    if (!(error instanceof TypeError)) throw error;
-    fallbackLocal = true;
-    return acaoLocal();
-  }
+  return response.status === 204 ? null : response.json();
 }
 
 const historicoService = {
   usandoFallbackLocal() {
-    return fallbackLocal;
+    return false;
   },
-  listar() {
-    return comFallbackLocal(async () => {
-      const dados = await requisitar();
-      salvarLocal(ordenarPorData(dados));
-      return dados;
-    }, () => ordenarPorData(lerLocal()));
+
+  async listar() {
+    const idUsuario = obterIdUsuario();
+
+    const dados = await requisitar(`?idUsuario=${idUsuario}`);
+
+    return dados.map(converterParaFrontend);
   },
-  criar(movimentacao) {
-    return comFallbackLocal(
-      async () => {
-        const criada = await requisitar('', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(movimentacao) });
-        salvarLocal(ordenarPorData([...lerLocal().filter((item) => item.id !== criada.id), criada]));
-        return criada;
-      },
-      () => {
-        const criada = { ...movimentacao, id: Date.now(), dataHora: movimentacao.dataHora || dataHoraAtual() };
-        salvarLocal(ordenarPorData([...lerLocal(), criada]));
-        return criada;
-      },
+
+  async criar(movimentacao) {
+    const dados = converterParaBackend(movimentacao);
+
+    const criada = await requisitar('', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dados),
+    });
+
+    return converterParaFrontend(criada);
+  },
+
+  async atualizar(id, movimentacao) {
+    const idUsuario = obterIdUsuario();
+    const dados = converterParaBackend(movimentacao);
+
+    const atualizada = await requisitar(
+      `/${id}?idUsuario=${idUsuario}`,
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados),
+      }
     );
+
+    if (!atualizada) {
+      throw new Error('Movimentação não encontrada.');
+    }
+
+    return converterParaFrontend(atualizada);
   },
-  atualizar(id, movimentacao) {
-    return comFallbackLocal(
-      async () => {
-        const atualizada = await requisitar(`/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(movimentacao) });
-        salvarLocal(ordenarPorData([...lerLocal().filter((item) => item.id !== id), atualizada]));
-        return atualizada;
-      },
-      () => {
-        const atualizada = { ...movimentacao, id, dataHora: movimentacao.dataHora || dataHoraAtual() };
-        salvarLocal(ordenarPorData(lerLocal().map((item) => item.id === id ? atualizada : item)));
-        return atualizada;
-      },
-    );
-  },
-  remover(id) {
-    return comFallbackLocal(
-      async () => {
-        await requisitar(`/${id}`, { method: 'DELETE' });
-        salvarLocal(lerLocal().filter((item) => item.id !== id));
-      },
-      () => salvarLocal(lerLocal().filter((item) => item.id !== id)),
-    );
+
+  async remover(id) {
+    const idUsuario = obterIdUsuario();
+
+    await requisitar(`/${id}?idUsuario=${idUsuario}`, {
+      method: 'DELETE',
+    });
   },
 };
 
