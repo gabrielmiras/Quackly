@@ -31,6 +31,3 @@ build/
 
 ### VS Code ###
 .vscode/
-
-### Senha do banco local encondida ###
-src/main/resources/application.properties
