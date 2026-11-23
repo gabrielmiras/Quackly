@@ -1,22 +1,11 @@
+import { useEffect, useMemo, useState } from 'react';
 import DashboardLayout from '../layouts/DashboardLayout.jsx';
 import Card from '../components/Card.jsx';
+import historicoService from '../services/historicoService.js';
 import aviao from '../assets/meta-aviao.png';
 import casa from '../assets/meta-casa.png';
 import sonho from '../assets/meta-sonho.png';
 import more from '../assets/meta-mais.png';
-
-const STATS = [
-  { label: 'Este ano', value: 'R$ 20.652,50'},
-  { label: 'Este mês', value: 'R$ 1.321,20'},
-  { label: 'Esta semana', value: 'R$ 250,00'},
-];
-
-/* INFORMACOES PRA FUNCAO QUE CRIA O GRAFICO
-*const EXPENSES = [
-  { label: 'Aluguel', value: 'R$ 1860,00', color: '#00bcd4' },
-  { label: 'Alimentos', value: 'R$ 1.294,15', color: '#009688' },
-  { label: 'Emergências', value: 'R$ 100,00', color: '#e91e63' },
-];*/
 
 const GOALS = [
   { image: aviao, title: 'Viagem' },
@@ -25,34 +14,89 @@ const GOALS = [
   { image: more, title: 'Nova meta' },
 ];
 
-/** Rosca + legenda de despesas (só é usado nesta página, por isso fica local). 
-function ExpensesChart({ items }) {
-  return (
-    <div className="gestao-chart">
-      <div className="gestao-chart__donut"></div>
-      <div className="gestao-chart__legend">
-        {items.map((item) => (
-          <div className="gestao-chart__item" key={item.label}>
-            <div className="gestao-chart__label">
-              <div className="gestao-chart__dot" style={{ backgroundColor: item.color }}></div>
-              <span>{item.label}</span>
-            </div>
-            <span>{item.value}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}*/
+function formatarMoeda(valor) {
+  return valor.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  });
+}
+
+function calcularEconomia(itens) {
+  return itens.reduce((acc, item) => {
+    const valor = Number(item.valor) || 0;
+    return item.tipo === 'ENTRADA' ? acc + valor : acc - valor;
+  }, 0);
+}
+
+function obterData(item) {
+  if (!item.dataHora) return null;
+  const d = new Date(String(item.dataHora).replace(' ', 'T'));
+  return Number.isNaN(d.getTime()) ? null : d;
+}
 
 function Gestao() {
+  const [movimentacoes, setMovimentacoes] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    historicoService
+      .listar()
+      .then((dados) => {
+        setMovimentacoes(dados || []);
+      })
+      .catch((err) => {
+        console.error('Erro ao carregar movimentações:', err);
+      })
+      .finally(() => {
+        setCarregando(false);
+      });
+  }, []);
+
+  const stats = useMemo(() => {
+    const agora = new Date();
+    const anoAtual = agora.getFullYear();
+    const mesAtual = agora.getMonth();
+
+    // Início da semana (Segunda-feira 00:00:00)
+    const inicioSemana = new Date(agora);
+    const diaSemana = (inicioSemana.getDay() + 6) % 7;
+    inicioSemana.setDate(agora.getDate() - diaSemana);
+    inicioSemana.setHours(0, 0, 0, 0);
+
+    const inicioMes = new Date(anoAtual, mesAtual, 1);
+    const inicioAno = new Date(anoAtual, 0, 1);
+
+    const movimentacoesAno = movimentacoes.filter((item) => {
+      const d = obterData(item);
+      return d && d >= inicioAno;
+    });
+
+    const movimentacoesMes = movimentacoes.filter((item) => {
+      const d = obterData(item);
+      return d && d >= inicioMes;
+    });
+
+    const movimentacoesSemana = movimentacoes.filter((item) => {
+      const d = obterData(item);
+      return d && d >= inicioSemana;
+    });
+
+    return [
+      { label: 'Este ano', value: formatarMoeda(calcularEconomia(movimentacoesAno)) },
+      { label: 'Este mês', value: formatarMoeda(calcularEconomia(movimentacoesMes)) },
+      { label: 'Esta semana', value: formatarMoeda(calcularEconomia(movimentacoesSemana)) },
+    ];
+  }, [movimentacoes]);
+
   return (
     <DashboardLayout>
       <section id="gerenciamento" className="dash-section">
         <h1 className="dash-section__title">Visão Geral</h1>
-        <p className="dash-section__subtitle">Quanto você economizou?</p>
+        <p className="dash-section__subtitle">
+          {carregando ? 'Calculando quanto você economizou...' : 'Quanto você economizou?'}
+        </p>
         <div className="gestao-stats">
-          {STATS.map((stat) => (
+          {stats.map((stat) => (
             <Card key={stat.label} variant="stat" {...stat} />
           ))}
         </div>

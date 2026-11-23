@@ -12,7 +12,7 @@ const INITIAL_FORM = {
   acceptedTerms: false,
 };
 
-const API_URL = 'https://quackly-production.up.railway.app';
+const API_URL = (import.meta.env.VITE_API_URL || 'https://quackly-production.up.railway.app').replace(/\/$/, '');
 
 function Cadastro() {
   const navigate = useNavigate();

@@ -4,7 +4,7 @@ import AuthLayout from '../layouts/AuthLayout.jsx';
 import Button from '../components/Button.jsx';
 import FormInput from '../components/FormInput.jsx';
 
-const API_URL = 'https://quackly-production.up.railway.app';
+const API_URL = (import.meta.env.VITE_API_URL || 'https://quackly-production.up.railway.app').replace(/\/$/, '');
 
 function Login() {
   const navigate = useNavigate();
