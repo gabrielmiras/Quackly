@@ -1,4 +1,3 @@
-
 const COINS = [
   { left: '5%', fontSize: 28, delay: 0, opacity: 0.1 },
   { left: '15%', fontSize: 35, delay: 1 },

@@ -30,6 +30,7 @@ const BUTTON_STYLES = {
     rounded-[50px] border-0
     bg-white px-6 py-2
     text-black hover:scale-110
+    font-bold
   `,
 
   social: `
@@ -44,7 +45,7 @@ const BUTTON_STYLES = {
 
   submit: `
     block w-full appearance-none
-    !rounded-xl !border !border-[#d6a900]
+    !rounded-full !border !border-[#d6a900]
     bg-[#eab308] p-[14px]
     text-center text-base font-bold text-black
     transition-all duration-200
@@ -52,10 +53,10 @@ const BUTTON_STYLES = {
   `,
 
   action: `
-    whitespace-nowrap rounded-lg border-0
-    bg-[#0d6efd] px-4 py-2
+    whitespace-nowrap rounded-full border-0
+    bg-[#23385d] px-4 py-2
     font-medium text-white
-    hover:bg-[#0b5ed7]
+    hover:bg-[#304b75]
   `,
 };
 

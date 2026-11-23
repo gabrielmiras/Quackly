@@ -1,4 +1,4 @@
-const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '');
+const BASE_URL = (import.meta.env.VITE_API_URL || 'https://quackly-production.up.railway.app').replace(/\/$/, '');
 const ENDPOINT = `${BASE_URL}/movimentacoes`;
 
 function obterIdUsuario() {

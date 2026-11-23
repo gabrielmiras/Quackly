@@ -1,4 +1,3 @@
-
 import Navbar from '../components/Navbar.jsx';
 import Footer from '../components/Footer.jsx';
 import Button from '../components/Button.jsx';
@@ -8,6 +7,8 @@ import CoinBackground from '../components/CoinBackground.jsx';
 import duck from '../assets/logo-quackly3.png';
 import patoNoCelular from '../assets/mockup-celular.png';
 import notebookGrafico from '../assets/mockup-notebook.png';
+
+import { ChevronDown } from 'lucide-react';
 
 const CONTAINER = `
   mx-auto w-full px-3
@@ -63,22 +64,6 @@ const TRANSACTIONS = [
   },
 ];
 
-const STANDARD_FEATURES = [
-  {
-    text: 'Escolha entre diferentes maneiras de aprender (cursos, dicas e conteúdos curtos).',
-  },
-  {
-    text: 'Tenha seu próprio assistente de IA para facilitar sua gestão e aprendizado.',
-  },
-  {
-    text: 'Defina suas metas, e o Quackly faz o resto.',
-  },
-  {
-    text: 'Escolha entre conectar o Quackly ao seu banco para registrar transações automaticamente.',
-    subItem: 'Ou escolha cadastrar as transações manualmente.',
-  },
-];
-
 function Home() {
   return (
     <div
@@ -95,18 +80,30 @@ function Home() {
 
       {/* HERO */}
       <section className="
-        mt-[160px] mb-[160px]
-        px-0 pt-[100px] pb-[60px]
+        mt-[130px] mb-[210px]
+        px-3 pt-[80px] pb-[60px]
         text-center
       ">
-        <div className={CONTAINER}>
-          <h1 className="
-            mb-6 text-[clamp(2.2rem,8vw,3.5rem)]
-            font-bold leading-[1.1]
-            tracking-[-1.5px] text-white
-          ">
-            Você não precisa cuidar do seu <br />
+        <div className="
+          mx-auto w-full max-w-[1500px] px-3
+        ">
+          <h1
+            style={{
+              fontSize: 'clamp(2.2rem, 8vw, 4rem)',
+              lineHeight: 1.08,
+              letterSpacing: '-1px',
+            }}
+            className="
+              mx-auto mb-8 w-full
+              max-w-[1000px]
+              !font-extrabold text-white
+              sm:tracking-[-2px]
+            "
+          >
+            Você não precisa cuidar do seu
+
             <span className="
+              mt-3 block
               bg-[image:var(--gradient-primary)]
               bg-clip-text text-transparent
             ">
@@ -114,28 +111,49 @@ function Home() {
             </span>
           </h1>
 
-          <div className="mt-[10px]">
+          <div className="mt-9">
             <Button
               variant="primary"
               to="/login"
-              className="mr-3"
+              className="!px-8 !py-3"
             >
               Começar agora
             </Button>
           </div>
+          <a
+            href="#features"
+            aria-label="Conheça os recursos do Quackly"
+            className="
+              mt-[305px] inline-flex
+              items-center justify-center
+              text-[#FFCB61]
+              transition-colors duration-300
+              hover:text-white
+              animate-bounce
+            "
+          >
+            <ChevronDown size={38} strokeWidth={2.5} />
+          </a>
         </div>
       </section>
 
       {/* RECURSOS */}
-      <section id="features" className="py-12">
+      <section
+        id="features"
+        className="scroll-mt-[110px] py-12"
+      >
         <div className={`${CONTAINER} text-center`}>
           <h2 className="text-[2rem] font-medium text-white">
             Por que escolher o <b>Quackly?</b>
           </h2>
 
-          <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="
+            mt-12 grid w-full min-w-0
+            grid-cols-1 items-stretch
+            gap-6 md:grid-cols-3
+          ">
             {FEATURES.map((feature) => (
-              <div key={feature.title} className="mb-4">
+              <div key={feature.title} className="min-w-0">
                 <Card variant="feature" {...feature} />
               </div>
             ))}
@@ -194,7 +212,7 @@ function Home() {
                 max-[991px]:mt-10
                 max-[991px]:text-center
               ">
-                Surpresas na fatura? Comigo, não
+                Surpresas na fatura? Comigo, não!
               </h2>
 
               <p className="
@@ -208,9 +226,11 @@ function Home() {
                 como melhorar sua gestão financeira.
               </p>
 
-              <Button variant="pill" to="/login">
-                Quero Aprender
-              </Button>
+              <div className="flex justify-center lg:justify-start">
+                <Button variant="pill" to="/login">
+                  Quero Aprender
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -219,7 +239,10 @@ function Home() {
       {/* MENTOR VIRTUAL */}
       <section
         id="mentor"
-        className="overflow-hidden py-[60px]"
+        className="
+          scroll-mt-[110px]
+          overflow-hidden py-[60px]
+        "
       >
         <div className={CONTAINER}>
           <div className="
@@ -252,9 +275,11 @@ function Home() {
                 virtual. Cada decisão financeira correta faz ele crescer, e o seu saldo bancário também.
               </p>
 
-              <Button variant="pill" to="/login">
-                Iniciar Jornada
-              </Button>
+              <div className="flex justify-center lg:justify-start">
+                <Button variant="pill" to="/login">
+                  Iniciar Jornada
+                </Button>
+              </div>
             </div>
 
             <div className="flex justify-center">
@@ -267,43 +292,6 @@ function Home() {
                 "
               />
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* BENEFÍCIOS */}
-      <section className="py-20">
-        <div className={CONTAINER}>
-          <h2 className="
-            mb-4 text-center
-            text-[2rem] font-medium
-            text-white
-          ">
-            Benefícios
-          </h2>
-
-          <p className="
-            mb-8 text-center
-            text-base text-[#94a3b8]
-          ">
-            Veja quais são os benefícios e diferenciais de usar o Quackly.
-          </p>
-
-          <div className="
-            mt-12 grid
-            grid-cols-[repeat(auto-fit,minmax(300px,1fr))]
-            gap-8
-            max-[768px]:grid-cols-1
-          ">
-            <Card
-              variant="pricing"
-              title="Quackly Standard"
-              price="Grátis"
-              subtitle="Tudo que você precisa para integrar seu aprendizado à gestão do dia a dia"
-              features={STANDARD_FEATURES}
-              ctaLabel="Começar"
-              ctaTo="/login"
-            />
           </div>
         </div>
       </section>

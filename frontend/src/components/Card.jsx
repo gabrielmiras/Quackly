@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import {
   GraduationCap,
@@ -31,6 +30,7 @@ function Card({ variant = 'feature', className = '', ...props }) {
   const base = `box-border ${className}`.trim();
 
   switch (variant) {
+
     // FEATURE
     case 'feature': {
       const { icon, iconImage, title, description } = props;
@@ -40,36 +40,55 @@ function Card({ variant = 'feature', className = '', ...props }) {
         <div
           className={`
             ${base}
-            h-full rounded-[24px] border border-[#EBECF0]
-            bg-[#23385d] px-[30px] py-10 text-center
+            box-border flex h-full w-full min-w-0
+            flex-col items-center
+            rounded-[24px] border border-[#EBECF0]
+            bg-[#23385d]
+            px-5 sm:px-[30px] py-10
+            text-center
             transition-all duration-300
-            hover:-translate-y-[10px] hover:border-[#444]
+            hover:-translate-y-[10px]
+            hover:border-[#444]
           `}
         >
           {iconImage ? (
             <img
               src={iconImage}
               alt=""
-              className="h-[60px] w-[60px] scale-90 invert"
+              className="
+                mx-auto mb-3 block
+                h-[60px] w-[60px]
+                scale-90 invert
+              "
             />
           ) : (
             Icon && (
               <Icon
                 size={40}
                 strokeWidth={1.8}
-                className="mb-3 inline-block text-white"
+                className="mb-3 text-white"
               />
             )
           )}
 
-          <h3 className="mb-[10px] mt-[10px]">
+          <h3 className="
+            mt-[10px] mb-[10px]
+            w-full text-center
+          ">
             {title}
           </h3>
 
-          <p>{description}</p>
+          <p className="
+            w-full min-w-0
+            text-center
+            break-words
+          ">
+            {description}
+          </p>
         </div>
       );
     }
+
 
     // FLOATING
     case 'floating': {
@@ -85,7 +104,7 @@ function Card({ variant = 'feature', className = '', ...props }) {
       const Icon = CARD_ICONS[icon];
 
       const positions = {
-        1: 'top-[15%] right-[-100px]',
+        1: 'top-[10%] right-[-100px]',
         2: 'top-[45%] right-[-120px]',
         3: 'top-[75%] right-[-100px]',
       };
@@ -94,10 +113,11 @@ function Card({ variant = 'feature', className = '', ...props }) {
         <div
           className={`
             ${base}
+            qk-floating-card
             absolute z-[5] flex w-[260px] items-center
-            rounded-2xl border border-white/10
-            bg-[rgba(30,30,30,0.9)] px-4 py-3
-            shadow-[0_10px_30px_rgba(0,0,0,0.5)]
+            rounded-2xl border
+            bg-[rgba(30,30,30,0.88)] px-4 py-3
+            shadow-[0_8px_25px_rgba(0,0,0,0.25)]
             backdrop-blur-[10px]
             animate-[qk-float_4s_ease-in-out_infinite]
             ${positions[position] ?? ''}
@@ -111,6 +131,10 @@ function Card({ variant = 'feature', className = '', ...props }) {
             max-[991px]:w-[85%]
             max-[991px]:animate-none
           `}
+          style={{
+            borderColor: 'rgba(148, 163, 184, 0.16)',
+            borderWidth: '1px',
+          }}
         >
           <div
             className={`

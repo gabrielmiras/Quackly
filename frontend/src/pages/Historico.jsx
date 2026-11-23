@@ -1,5 +1,5 @@
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
 
 import Button from '../components/Button.jsx';
@@ -38,7 +38,7 @@ function formatarDataHora(valor) {
 
 function ordenarPorData(movimentacoes) {
   return [...movimentacoes].sort((a, b) =>
-    String(b.dataHora || '').localeCompare(String(a.dataHora || '')),
+    String(b.dataHora || '').localeCompare(String(a.dataHora || ''))
   );
 }
 
@@ -48,11 +48,15 @@ function Historico() {
     ...FORM_VAZIO,
     dataHora: agoraLocal(),
   }));
+
   const [editandoId, setEditandoId] = useState(null);
   const [busca, setBusca] = useState('');
   const [aviso, setAviso] = useState('');
   const [agora, setAgora] = useState(agoraLocal);
   const [dataHoraAlterada, setDataHoraAlterada] = useState(false);
+
+  // Referência ao formulário para a rolagem no mobile.
+  const formularioRef = useRef(null);
 
   useEffect(() => {
     historicoService.listar()
@@ -61,7 +65,7 @@ function Historico() {
 
         if (historicoService.usandoFallbackLocal()) {
           setAviso(
-            'API indisponível. As movimentações ficam salvas neste navegador.',
+            'API indisponível. As movimentações ficam salvas neste navegador.'
           );
         }
       })
@@ -73,7 +77,7 @@ function Historico() {
   useEffect(() => {
     const intervalo = window.setInterval(
       () => setAgora(agoraLocal()),
-      1000,
+      1000
     );
 
     return () => window.clearInterval(intervalo);
@@ -87,6 +91,25 @@ function Historico() {
       }));
     }
   }, [agora, dataHoraAlterada, editandoId]);
+
+  // Depois que o React atualiza o formulário para edição,
+  // leva o usuário até ele em telas menores.
+  useEffect(() => {
+    if (editandoId === null) return;
+
+    const mobile = window.matchMedia('(max-width: 767px)').matches;
+
+    if (!mobile) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      formularioRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [editandoId]);
 
   const filtradas = useMemo(
     () =>
@@ -102,7 +125,7 @@ function Historico() {
           .toLowerCase()
           .includes(busca.trim().toLowerCase());
       }),
-    [movimentacoes, busca],
+    [movimentacoes, busca]
   );
 
   function alterarCampo(event) {
@@ -121,6 +144,7 @@ function Historico() {
       ...FORM_VAZIO,
       dataHora: agoraLocal(),
     });
+
     setEditandoId(null);
     setDataHoraAlterada(false);
   }
@@ -148,7 +172,7 @@ function Historico() {
         const criada = await historicoService.criar(dados);
 
         setMovimentacoes((atuais) =>
-          ordenarPorData([...atuais, criada]),
+          ordenarPorData([...atuais, criada])
         );
 
         const modoLocal = historicoService.usandoFallbackLocal()
@@ -156,20 +180,20 @@ function Historico() {
           : '';
 
         setAviso(
-          `${criada.nome || (criada.tipo === 'ENTRADA' ? 'Entrada' : 'Saída')} registrada.${modoLocal}`,
+          `${criada.nome || (criada.tipo === 'ENTRADA' ? 'Entrada' : 'Saída')} registrada.${modoLocal}`
         );
       } else {
         const atualizada = await historicoService.atualizar(
           editandoId,
-          dados,
+          dados
         );
 
         setMovimentacoes((atuais) =>
           ordenarPorData(
             atuais.map((item) =>
-              item.id === editandoId ? atualizada : item,
-            ),
-          ),
+              item.id === editandoId ? atualizada : item
+            )
+          )
         );
 
         setAviso('Movimentação atualizada.');
@@ -178,7 +202,7 @@ function Historico() {
       limparFormulario();
     } catch {
       setAviso(
-        'Não foi possível salvar a movimentação. Tente novamente.',
+        'Não foi possível salvar a movimentação. Tente novamente.'
       );
     }
   }
@@ -209,7 +233,7 @@ function Historico() {
       await historicoService.remover(item.id);
 
       setMovimentacoes((atuais) =>
-        atuais.filter((atual) => atual.id !== item.id),
+        atuais.filter((atual) => atual.id !== item.id)
       );
 
       if (editandoId === item.id) {
@@ -219,56 +243,70 @@ function Historico() {
       setAviso('Movimentação excluída.');
     } catch {
       setAviso(
-        'Não foi possível excluir a movimentação. Tente novamente.',
+        'Não foi possível excluir a movimentação. Tente novamente.'
       );
     }
   }
 
   const campoSelect = `
-    w-full rounded-[10px] border border-[#cbd5e1]
-    bg-white px-3 py-[11px] text-sm text-[#1e293b]
-    outline-none transition-colors
-    focus:border-[#d79a16]
-    focus:ring-[3px] focus:ring-[#ffcb61]/35
+    w-full rounded-xl border px-4 py-3
+    text-sm font-semibold outline-none transition-all
+    focus:ring-[3px]
+    ${
+      form.tipo === 'ENTRADA'
+        ? 'border-[#86efac] bg-[#f0fdf4] text-[#166534] focus:border-[#16a34a] focus:ring-[#16a34a]/15'
+        : 'border-[#fda4af] bg-[#fff1f2] text-[#9f1239] focus:border-[#e11d48] focus:ring-[#e11d48]/15'
+    }
   `;
 
   return (
     <DashboardLayout>
-      <section className="mb-[60px] scroll-mt-[110px] text-[#1e293b]">
-        <h1 className="mb-[5px] text-[1.8rem] font-bold">
-          Histórico
-        </h1>
+      <section className="mb-[60px] scroll-mt-[110px] text-[#142238]">
 
-        <p className="mb-[25px] text-base text-[#64748b]">
-          Cadastre e acompanhe suas entradas e saídas.
-        </p>
+        {/* CABEÇALHO */}
+        <div className="mb-7">
+          <h1 className="text-[1.8rem] font-bold tracking-tight">
+            Histórico
+          </h1>
+
+          <p className="mt-1 text-sm text-[#475569]">
+            Cadastre e acompanhe suas entradas e saídas.
+          </p>
+        </div>
 
         <div className="
           grid grid-cols-1 items-start gap-6
           min-[992px]:grid-cols-[minmax(0,0.8fr)_minmax(0,1.4fr)]
         ">
-          {/* Formulário */}
-          <section className="
-            min-w-0 rounded-[18px] border border-[#e2e8f0]
-            bg-white p-[18px] shadow-[0_8px_24px_rgba(25,40,65,0.06)]
-            sm:p-6
-          ">
-            <h2 className="mb-5 text-[1.15rem] font-bold">
+
+          {/* FORMULÁRIO */}
+          <section
+            ref={formularioRef}
+            className="
+              min-w-0 scroll-mt-[110px]
+              rounded-2xl border border-[#d5dee9]
+              bg-white p-5
+              shadow-[0_5px_20px_rgba(20,34,56,0.06)]
+              sm:p-6
+            "
+          >
+            <h2 className="mb-4 text-xl font-bold tracking-tight text-[#142238]">
               {editandoId === null
                 ? 'Nova movimentação'
                 : 'Editar movimentação'}
             </h2>
 
             <form
-              className="grid gap-4"
+              className="grid gap-3"
               onSubmit={enviarFormulario}
             >
-              <div className="flex flex-col gap-[6px]">
+              <div className="flex flex-col gap-[7px]">
                 <label
                   htmlFor="hist-tipo"
-                  className="text-[0.85rem] font-semibold text-[#334155]"
+                  className="text-sm font-semibold text-[#1e293b]"
                 >
-                  Tipo da Movimentação <span className="text-[#d79a16]">*</span>
+                  Tipo da movimentação{' '}
+                  <span className="text-[#d79a16]">*</span>
                 </label>
 
                 <select
@@ -279,15 +317,26 @@ function Historico() {
                   onChange={alterarCampo}
                   className={campoSelect}
                 >
-                  <option value="ENTRADA">Entrada</option>
-                  <option value="SAIDA">Saída</option>
+                  <option
+                    value="ENTRADA"
+                    className="bg-[#f0fdf4] font-semibold text-[#166534]"
+                  >
+                    Entrada
+                  </option>
+
+                  <option
+                    value="SAIDA"
+                    className="bg-[#fff1f2] font-semibold text-[#9f1239]"
+                  >
+                    Saída
+                  </option>
                 </select>
               </div>
 
               <FormInput
                 variant="light"
                 id="hist-data-hora"
-                label="Data e Hora"
+                label="Data e hora"
                 name="dataHora"
                 type="datetime-local"
                 step="1"
@@ -321,8 +370,17 @@ function Historico() {
                 placeholder="Ex.: Salário, Mercado, Aluguel (opcional)"
               />
 
-              <div className="mt-1 grid gap-[10px]">
-                <Button variant="submit" type="submit">
+              <div className="mt-0 grid gap-2">
+                <Button
+                  variant="submit"
+                  type="submit"
+                  className="
+                    !rounded-full !border-[#d6a900]
+                    !py-4 !text-sm
+                    shadow-[0_4px_12px_rgba(214,169,0,0.18)]
+                    hover:!-translate-y-0.5
+                  "
+                >
                   {editandoId === null
                     ? 'Registrar movimentação'
                     : 'Salvar alterações'}
@@ -330,9 +388,21 @@ function Historico() {
 
                 {editandoId !== null && (
                   <Button
-                    variant="outline"
+                    variant="submit"
                     onClick={limparFormulario}
-                    className="!border-[#cbd5e1] !text-[#334155]"
+                    className="
+                      !w-full !h-[59px]
+                      !rounded-full
+                      !border !border-[#fecaca]
+                      !bg-white
+                      !px-4 !py-0
+                      !text-sm !font-semibold
+                      !text-[#dc2626]
+                      hover:!bg-[#fef2f2]
+                      hover:!border-[#fca5a5]
+                      shadow-none
+                      transition-colors duration-200
+                    "
                   >
                     Cancelar edição
                   </Button>
@@ -343,8 +413,9 @@ function Historico() {
             {aviso && (
               <p
                 className="
-                  mt-4 rounded-[10px] bg-[#dcfce7]
-                  px-[14px] py-[11px] text-[0.9rem] text-[#14532d]
+                  mt-5 rounded-xl border border-[#bbf7d0]
+                  bg-[#f0fdf4] px-4 py-3
+                  text-sm font-medium text-[#166534]
                 "
                 role="status"
               >
@@ -353,27 +424,28 @@ function Historico() {
             )}
           </section>
 
-          {/* Lista de movimentações */}
+          {/* LISTA DE MOVIMENTAÇÕES */}
           <section className="
-            min-w-0 rounded-[18px] border border-[#e2e8f0]
-            bg-white p-[18px] shadow-[0_8px_24px_rgba(25,40,65,0.06)]
+            min-w-0 rounded-2xl border border-[#d5dee9]
+            bg-white p-5
+            shadow-[0_5px_20px_rgba(20,34,56,0.06)]
             sm:p-6
           ">
             <div className="
-              mb-5 flex flex-wrap items-center
-              justify-between gap-4
+              mb-6 flex flex-col gap-4
+              sm:flex-row sm:items-center sm:justify-between
             ">
-              <h2 className="text-[1.15rem] font-bold">
+              <h2 className="text-xl font-bold tracking-tight text-[#142238]">
                 Movimentações
-                <span className="ml-[6px] text-[0.9rem] font-medium text-[#64748b]">
+                <span className="ml-2 text-sm font-semibold text-[#475569]">
                   {movimentacoes.length}
                 </span>
               </h2>
 
               <label className="
-                grid min-w-0 flex-1 gap-[5px]
-                text-[0.8rem] font-semibold text-[#64748b]
-                sm:min-w-[220px] sm:flex-none
+                grid min-w-0 gap-2
+                text-sm font-semibold text-[#334155]
+                sm:w-[230px] sm:shrink-0
               ">
                 <span>Buscar movimentação</span>
 
@@ -382,128 +454,237 @@ function Historico() {
                   value={busca}
                   onChange={(event) => setBusca(event.target.value)}
                   placeholder="Descrição ou tipo"
-                  className={`
-                    w-full rounded-[10px] border border-[#cbd5e1]
-                    bg-white px-3 py-[11px]
+                  className="
+                    w-full rounded-xl border border-[#cbd5e1]
+                    bg-white px-4 py-3
                     text-sm font-normal text-[#1e293b]
-                    outline-none transition-colors
-                    focus:border-[#d79a16]
-                    focus:ring-[3px] focus:ring-[#ffcb61]/35
-                  `}
+                    outline-none transition-all
+                    placeholder:text-[#64748b]
+                    focus:border-[#4775bd]
+                    focus:ring-[3px] focus:ring-[#4775bd]/15
+                  "
                 />
               </label>
             </div>
 
             {filtradas.length === 0 ? (
-              <p className="py-[22px] text-[#64748b]">
+              <p className="py-7 text-sm font-medium text-[#475569]">
                 {movimentacoes.length
                   ? 'Nenhuma movimentação encontrada.'
                   : 'Nenhuma movimentação registrada. Use o formulário para adicionar a primeira.'}
               </p>
             ) : (
-              <div className="w-full overflow-x-auto">
-                <table className="w-full min-w-[620px] border-collapse text-left">
-                  <thead>
-                    <tr>
-                      {['Movimentação', 'Data e hora', 'Valor', 'Ações'].map(
-                        (titulo) => (
+              <>
+                {/* VISUALIZAÇÃO MOBILE */}
+                <div className="grid gap-3 md:hidden">
+                  {filtradas.map((item) => {
+                    const entrada = item.tipo === 'ENTRADA';
+                    const nome =
+                      item.nome?.trim() ||
+                      (entrada ? 'Entrada' : 'Saída');
+
+                    return (
+                      <div
+                        key={item.id}
+                        className={`
+                          rounded-xl border border-[#e2e8f0]
+                          bg-white p-4
+                          ${item.id === editandoId ? 'border-[#eab308] bg-[#fffbeb]' : ''}
+                        `}
+                      >
+                        <div className="mb-3 flex items-center justify-between gap-2">
+                          <span className={`
+                            inline-flex rounded-full px-3 py-1.5
+                            text-xs font-bold
+                            ${entrada
+                              ? 'bg-[#dcfce7] text-[#166534]'
+                              : 'bg-[#ffe4e6] text-[#9f1239]'
+                            }
+                          `}>
+                            {entrada ? 'Entrada' : 'Saída'}
+                          </span>
+
+                          <span className={`
+                            whitespace-nowrap text-sm font-bold
+                            ${entrada ? 'text-[#047857]' : 'text-[#be123c]'}
+                          `}>
+                            {entrada ? '+' : '−'} R${' '}
+                            {Number(item.valor).toLocaleString('pt-BR', {
+                              minimumFractionDigits: 2,
+                            })}
+                          </span>
+                        </div>
+
+                        <p className="mb-1 break-words font-bold text-[#142238]">
+                          {nome}
+                        </p>
+
+                        <p className="mb-4 text-xs text-[#64748b]">
+                          {formatarDataHora(item.dataHora)}
+                        </p>
+
+                        <div className="flex gap-2 border-t border-[#e2e8f0] pt-3">
+                          <Button
+                            variant="action"
+                            onClick={() => iniciarEdicao(item)}
+                            className="
+                              !flex-1 !rounded-lg !border-0
+                              !bg-[#23385d] !px-2 !py-2.5
+                              !text-xs !font-semibold !text-white
+                            "
+                          >
+                            <Pencil size={14} className="mr-1 inline" />
+                            Editar
+                          </Button>
+
+                          <Button
+                            variant="action"
+                            onClick={() => excluir(item)}
+                            className="
+                              !flex-1 !rounded-lg !border
+                              !border-[#fecaca] !bg-white
+                              !px-2 !py-2.5 !text-xs
+                              !font-semibold !text-[#b91c1c]
+                            "
+                          >
+                            <Trash2 size={14} className="mr-1 inline" />
+                            Excluir
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* VISUALIZAÇÃO DESKTOP */}
+                <div className="hidden w-full overflow-x-auto md:block">
+                  <table className="w-full min-w-[620px] border-collapse text-left">
+                    <thead>
+                      <tr>
+                        {[
+                          'Movimentação',
+                          'Data e hora',
+                          'Valor',
+                          'Ações',
+                        ].map((titulo) => (
                           <th
                             key={titulo}
                             className="
-                              border-b border-[#e2e8f0]
-                              px-[10px] py-3
-                              text-[0.76rem] font-semibold
-                              uppercase tracking-[0.04em]
-                              text-[#64748b]
+                              border-b border-[#dbe3ec]
+                              px-3 py-4
+                              text-xs font-bold uppercase
+                              tracking-wider text-[#334155]
                             "
                           >
                             {titulo}
                           </th>
-                        ),
-                      )}
-                    </tr>
-                  </thead>
+                        ))}
+                      </tr>
+                    </thead>
 
-                  <tbody>
-                    {filtradas.map((item) => {
-                      const entrada = item.tipo === 'ENTRADA';
-                      const nome =
-                        item.nome?.trim() ||
-                        (entrada ? 'Entrada' : 'Saída');
+                    <tbody>
+                      {filtradas.map((item) => {
+                        const entrada = item.tipo === 'ENTRADA';
+                        const nome =
+                          item.nome?.trim() ||
+                          (entrada ? 'Entrada' : 'Saída');
 
-                      return (
-                        <tr
-                          key={item.id}
-                          className={`
-                            ${item.id === editandoId ? 'bg-[#fffbeb]' : ''}
-                            last:[&>td]:border-b-0
-                          `}
-                        >
-                          <td className="border-b border-[#f1f5f9] px-[10px] py-[14px] text-[0.9rem] text-[#334155]">
-                            <span className={`
-                              mr-[9px] inline-flex rounded-full
-                              px-[9px] py-1 text-[0.72rem] font-bold
-                              ${entrada
-                                ? 'bg-[#dcfce7] text-[#166534]'
-                                : 'bg-[#ffe4e6] text-[#9f1239]'
-                              }
-                            `}>
-                              {entrada ? 'Entrada' : 'Saída'}
-                            </span>
+                        return (
+                          <tr
+                            key={item.id}
+                            className={`
+                              transition-colors
+                              hover:bg-[#f8fafc]
+                              ${item.id === editandoId ? 'bg-[#fffbeb]' : ''}
+                              last:[&>td]:border-b-0
+                            `}
+                          >
+                            <td className="
+                              border-b border-[#e2e8f0]
+                              px-3 py-4 text-sm text-[#334155]
+                            ">
+                              <span className={`
+                                mr-2 inline-flex rounded-full
+                                px-3 py-1.5 text-xs font-bold
+                                ${entrada
+                                  ? 'bg-[#dcfce7] text-[#166534]'
+                                  : 'bg-[#ffe4e6] text-[#9f1239]'
+                                }
+                              `}>
+                                {entrada ? 'Entrada' : 'Saída'}
+                              </span>
 
-                            <strong className="font-semibold text-[#1e293b]">
-                              {nome}
-                            </strong>
-                          </td>
+                              <strong className="font-bold text-[#142238]">
+                                {nome}
+                              </strong>
+                            </td>
 
-                          <td className="border-b border-[#f1f5f9] px-[10px] py-[14px] text-[0.9rem] text-[#334155]">
-                            {formatarDataHora(item.dataHora)}
-                          </td>
+                            <td className="
+                              whitespace-nowrap border-b border-[#e2e8f0]
+                              px-3 py-4 text-sm font-medium text-[#334155]
+                            ">
+                              {formatarDataHora(item.dataHora)}
+                            </td>
 
-                          <td className="border-b border-[#f1f5f9] px-[10px] py-[14px] text-[0.9rem]">
-                            <span className={`
-                              whitespace-nowrap font-bold
-                              ${entrada ? 'text-[#15803d]' : 'text-[#be123c]'}
-                            `}>
-                              {entrada ? '+' : '−'} R${' '}
-                              {Number(item.valor).toLocaleString('pt-BR', {
-                                minimumFractionDigits: 2,
-                              })}
-                            </span>
-                          </td>
+                            <td className="
+                              border-b border-[#e2e8f0]
+                              px-3 py-4 text-sm
+                            ">
+                              <span className={`
+                                whitespace-nowrap font-bold
+                                ${entrada
+                                  ? 'text-[#047857]'
+                                  : 'text-[#be123c]'
+                                }
+                              `}>
+                                {entrada ? '+' : '−'} R${' '}
+                                {Number(item.valor).toLocaleString('pt-BR', {
+                                  minimumFractionDigits: 2,
+                                })}
+                              </span>
+                            </td>
 
-                          <td className="border-b border-[#f1f5f9] px-[10px] py-[14px]">
-                            <div className="flex gap-[7px]">
-                              <Button
-                                variant="action"
-                                onClick={() => iniciarEdicao(item)}
-                                className="!rounded-lg !px-[10px] !py-[7px] !text-[0.8rem]"
-                              >
-                                <Pencil size={14} className="mr-1 inline" />
-                                Editar
-                              </Button>
+                            <td className="
+                              border-b border-[#e2e8f0]
+                              px-3 py-4
+                            ">
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  variant="action"
+                                  onClick={() => iniciarEdicao(item)}
+                                  className="
+                                    !rounded-full !border-0
+                                    !bg-[#23385d] !px-4 !py-2
+                                    !text-xs !font-semibold !text-white
+                                    hover:!bg-[#304b75]
+                                  "
+                                >
+                                  <Pencil size={14} className="mr-1 inline" />
+                                  Editar
+                                </Button>
 
-                              <Button
-                                variant="action"
-                                onClick={() => excluir(item)}
-                                className="
-                                  !rounded-lg !border !border-[#fecaca]
-                                  !bg-white !px-[10px] !py-[7px]
-                                  !text-[0.8rem] !text-[#b91c1c]
-                                  hover:!bg-[#fef2f2]
-                                "
-                              >
-                                <Trash2 size={14} className="mr-1 inline" />
-                                Excluir
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                                <Button
+                                  variant="action"
+                                  onClick={() => excluir(item)}
+                                  className="
+                                    !rounded-full !border !border-[#fecaca]
+                                    !bg-white !px-4 !py-2
+                                    !text-xs !font-semibold !text-[#b91c1c]
+                                    hover:!bg-[#fef2f2]
+                                  "
+                                >
+                                  <Trash2 size={14} className="mr-1 inline" />
+                                  Excluir
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </section>
         </div>

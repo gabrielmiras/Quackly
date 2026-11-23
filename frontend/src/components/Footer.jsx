@@ -2,133 +2,175 @@
 import logo from '../assets/logo-quackly.png';
 
 function Footer() {
+  const linkClass = `
+    text-[0.85rem] text-[#94a3b8]
+    !no-underline
+    transition-colors duration-300
+    hover:!text-[#FFCB61]
+    hover:!no-underline
+  `;
+
   return (
     <footer className="
-      mt-20 border-t border-[#333333]
-      bg-[rgba(30,30,30,0.9)]
-      pt-12 pb-4
+      mt-16 border-t border-white/10
+      bg-[#142238]
+      pt-10 pb-3
     ">
-      <div className="mx-auto w-full max-w-[1320px] px-3">
+      <div className="
+        mx-auto w-full max-w-[1320px]
+        px-6 sm:px-8
+      ">
+
+        {/* CONTEÚDO PRINCIPAL */}
         <div className="
-          mb-8 grid
-          grid-cols-[repeat(auto-fit,minmax(200px,1fr))]
-          gap-8
+          mb-9 grid
+          grid-cols-1 gap-7
+          sm:grid-cols-2
+          lg:grid-cols-3
         ">
-          {/* Identidade */}
-          <div>
-            <div className="
-              mb-3 flex items-center gap-3
-              text-[1.1rem] font-bold
-            ">
+
+          {/* IDENTIDADE */}
+          <div className="
+            flex flex-col items-start text-left
+          ">
+            <a
+              href="#top"
+              className="
+                mb-3 flex items-center gap-2
+                text-lg font-bold text-white
+                !no-underline hover:!no-underline
+              "
+            >
               <img
                 src={logo}
                 alt="Logo Quackly"
-                className="w-[50px]"
+                className="h-[42px] w-[42px] object-contain"
               />
 
-              <span>
-                Quackly
-                <p className="text-[0.9rem] font-normal text-[#94a3b8]">
-                  Seu dinheiro sob controle.
-                </p>
-              </span>
-            </div>
+              <span>Quackly</span>
+            </a>
+
+            <p className="
+              max-w-[260px]
+              text-left text-[0.82rem] leading-relaxed
+              text-[#94a3b8]
+            ">
+              Seu dinheiro sob controle.
+              Aprenda, organize e evolua com o Quackly.
+            </p>
           </div>
 
-          {/* Produto */}
-          <div>
+          {/* PRODUTO */}
+          <div className="
+            flex flex-col items-center
+            lg:items-start
+          ">
             <h4 className="
-              mb-4 text-[0.95rem]
-              font-normal text-[#f1f5f9]
+              mb-4 text-[0.9rem] font-bold
+              tracking-wide text-white
             ">
               Produto
             </h4>
 
-            <ul className="list-none p-0">
-              <li className="mb-3">
-                <a
-                  href="#features"
-                  style={{ textDecoration: 'none' }}
-                  className="
-                    text-[0.9rem] !text-[#94a3b8]
-                    !no-underline hover:!no-underline
-                    transition-colors duration-300
-                    hover:!text-[#FFCB61]
-                  "
-                >
+            <ul className="
+              flex list-none flex-col items-center gap-3 p-0
+              lg:items-start
+            ">
+              <li>
+                <a href="#features" className={linkClass}>
                   Recursos
                 </a>
               </li>
 
-              <li className="mb-3">
-                <a
-                  href="#mentor"
-                  style={{ textDecoration: 'none' }}
-                  className="
-                    text-[0.9rem] !text-[#94a3b8]
-                    !no-underline hover:!no-underline
-                    transition-colors duration-300
-                    hover:!text-[#FFCB61]
-                  "
-                >
+              <li>
+                <a href="#mentor" className={linkClass}>
                   Mentor Virtual
                 </a>
               </li>
 
-              <li className="mb-3">
-                <a
-                  href="#pricing"
-                  style={{ textDecoration: 'none' }}
-                  className="
-                    text-[0.9rem] !text-[#94a3b8]
-                    !no-underline hover:!no-underline
-                    transition-colors duration-300
-                    hover:!text-[#FFCB61]
-                  "
-                >
-                  Benefícios
+              <li>
+                <a href="#top" className={linkClass}>
+                  Início
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Disponibilidade */}
-          <div>
+          {/* GITHUB */}
+          <div className="
+            flex flex-col items-center
+            lg:items-start
+          ">
             <h4 className="
-              mb-4 text-[0.95rem]
-              font-normal text-[#f1f5f9]
+              mb-3 text-[0.9rem] font-bold
+              tracking-wide text-white
             ">
-              Disponível em
+              Acompanhe o projeto
             </h4>
 
-            <div className="flex gap-4">
-              <a
-                href="https://github.com/gabrielmiras/Quackly"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Quackly no GitHub"
-                style={{ textDecoration: 'none' }}
-                className="
-                  inline-block text-white
-                  !no-underline hover:!no-underline
-                  transition-transform duration-300
-                  hover:scale-110
-                "
-              >
-                <i className="bi bi-github text-[30px]" />
-              </a>
-            </div>
+            <a
+              href="https://github.com/gabrielmiras/Quackly"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Quackly no GitHub"
+              className="
+                inline-flex items-center gap-1.5
+                rounded-lg border border-white/10
+                bg-white/5 px-2.5 py-2
+                text-[#cbd5e1]
+                !no-underline hover:!no-underline
+                transition-all duration-300
+                hover:border-[#FFCB61]/40
+                hover:bg-white/10
+                hover:text-[#FFCB61]
+              "
+            >
+              <i className="bi bi-github text-base" />
+
+              <span className="text-[0.75rem] font-medium">
+                GitHub do Quackly
+              </span>
+
+              <i className="bi bi-arrow-up-right text-[0.6rem]" />
+            </a>
+
+            <p className="
+              mt-2 text-center text-[0.7rem]
+              text-[#64748b]
+            ">
+              Confira o desenvolvimento do projeto.
+            </p>
           </div>
         </div>
 
-        {/* Rodapé inferior */}
+        {/* RODAPÉ INFERIOR */}
         <div className="
-          border-t border-[#333333]
-          pt-8 text-center
-          text-[0.85rem] text-[#94a3b8]
+          flex flex-col items-center
+          justify-between gap-2
+          border-t border-white/10
+          pt-3 pb-0 text-center
+          sm:flex-row sm:text-left
         ">
-          <p>© 2026 Quackly</p>
+          <p className="text-[0.75rem] text-[#64748b]">
+            © 2026 Quackly. Todos os direitos reservados.
+          </p>
+
+          <a
+            href="#top"
+            className="
+              flex items-center gap-2
+              text-[0.75rem] font-medium
+              text-[#94a3b8]
+              !no-underline hover:!no-underline
+              transition-colors duration-300
+              hover:text-[#FFCB61]
+            "
+          >
+            Voltar ao topo
+            <i className="bi bi-arrow-up-circle" />
+          </a>
         </div>
+
       </div>
     </footer>
   );
