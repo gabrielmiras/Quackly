@@ -1,3 +1,4 @@
+
 const COINS = [
   { left: '5%', fontSize: 28, delay: 0, opacity: 0.1 },
   { left: '15%', fontSize: 35, delay: 1 },
@@ -20,21 +21,25 @@ const COINS = [
   { left: '90%', fontSize: 24, delay: 9.5 },
 ];
 
-/**
- * Cifrões dourados subindo ao fundo da Home.
- * Precisa ficar dentro de um ancestral com `isolation: isolate` (.home) para o
- * z-index negativo pintar ACIMA do fundo da página e ABAIXO do conteúdo.
- */
 function CoinBackground() {
   return (
-    <div className="coin-bg" aria-hidden="true">
+    <div
+      className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden"
+      aria-hidden="true"
+    >
       {COINS.map((coin) => (
         <div
           key={`${coin.left}-${coin.delay}`}
-          className="coin-bg__coin"
+          className="
+            absolute -top-[50px]
+            select-none font-bold
+            text-[#FFCB61]
+            animate-[qk-float-up_8s_linear_infinite]
+            [text-shadow:0_0_10px_rgba(255,215,0,0.6),0_0_20px_rgba(218,165,32,0.4)]
+          "
           style={{
             left: coin.left,
-            fontSize: coin.fontSize,
+            fontSize: `${coin.fontSize}px`,
             animationDelay: `${coin.delay}s`,
             opacity: coin.opacity ?? 1,
           }}

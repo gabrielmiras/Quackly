@@ -1,3 +1,4 @@
+
 import DashboardLayout from '../layouts/DashboardLayout.jsx';
 import Card from '../components/Card.jsx';
 
@@ -25,14 +26,41 @@ const QUIZZES = [
 function Aprendizado() {
   return (
     <DashboardLayout>
-      <section id="questionarios" className="dash-section">
-        <h1 className="dash-section__title">Questionários</h1>
-        <p className="dash-section__subtitle">Teste seus conhecimentos.</p>
+      <section
+        id="questionarios"
+        className="mb-[60px] scroll-mt-[110px]"
+      >
+        <h1 className="
+          mb-[5px] text-[1.8rem]
+          font-bold text-[#1e293b]
+        ">
+          Questionários
+        </h1>
 
-        <div className="row row-cols-1 row-cols-md-3 g-4">
+        <p className="
+          mb-[25px] text-base
+          text-[#64748b]
+        ">
+          Teste seus conhecimentos.
+        </p>
+
+        <div className="
+          grid grid-cols-1
+          gap-6
+          md:grid-cols-3
+        ">
           {QUIZZES.map((quiz) => (
-            <div className="col d-flex" key={quiz.title}>
-              <Card variant="quiz" {...quiz} onAction={() => console.log('Inscrito em', quiz.title)} />
+            <div
+              className="flex min-w-0"
+              key={quiz.title}
+            >
+              <Card
+                variant="quiz"
+                {...quiz}
+                onAction={() =>
+                  console.log('Inscrito em', quiz.title)
+                }
+              />
             </div>
           ))}
         </div>

@@ -1,11 +1,22 @@
+
 import Navbar from '../components/Navbar.jsx';
 import Footer from '../components/Footer.jsx';
 import Button from '../components/Button.jsx';
 import Card from '../components/Card.jsx';
 import CoinBackground from '../components/CoinBackground.jsx';
+
 import duck from '../assets/logo-quackly3.png';
 import patoNoCelular from '../assets/mockup-celular.png';
 import notebookGrafico from '../assets/mockup-notebook.png';
+
+const CONTAINER = `
+  mx-auto w-full px-3
+  sm:max-w-[540px]
+  md:max-w-[720px]
+  lg:max-w-[960px]
+  xl:max-w-[1140px]
+  2xl:max-w-[1320px]
+`;
 
 const FEATURES = [
   {
@@ -53,9 +64,15 @@ const TRANSACTIONS = [
 ];
 
 const STANDARD_FEATURES = [
-  { text: 'Escolha entre diferentes maneiras de aprender (cursos, dicas e conteúdos curtos).' },
-  { text: 'Tenha seu próprio assistente de IA para facilitar sua gestão e aprendizado.' },
-  { text: 'Defina suas metas, e o Quackly faz o resto.' },
+  {
+    text: 'Escolha entre diferentes maneiras de aprender (cursos, dicas e conteúdos curtos).',
+  },
+  {
+    text: 'Tenha seu próprio assistente de IA para facilitar sua gestão e aprendizado.',
+  },
+  {
+    text: 'Defina suas metas, e o Quackly faz o resto.',
+  },
   {
     text: 'Escolha entre conectar o Quackly ao seu banco para registrar transações automaticamente.',
     subItem: 'Ou escolha cadastrar as transações manualmente.',
@@ -64,33 +81,61 @@ const STANDARD_FEATURES = [
 
 function Home() {
   return (
-    <div id="top" className="home">
+    <div
+      id="top"
+      className="
+        relative isolate min-h-screen
+        overflow-x-clip
+        bg-[#192841] text-white
+        pt-[60px]
+      "
+    >
       <CoinBackground />
       <Navbar />
 
-      <section className="home-hero text-center">
-        <div className="container">
-          <h1 className="home-hero__title">
+      {/* HERO */}
+      <section className="
+        mt-[160px] mb-[160px]
+        px-0 pt-[100px] pb-[60px]
+        text-center
+      ">
+        <div className={CONTAINER}>
+          <h1 className="
+            mb-6 text-[clamp(2.2rem,8vw,3.5rem)]
+            font-bold leading-[1.1]
+            tracking-[-1.5px] text-white
+          ">
             Você não precisa cuidar do seu <br />
-            <span className="home-gradient-text">dinheiro sozinho.</span>
+            <span className="
+              bg-[image:var(--gradient-primary)]
+              bg-clip-text text-transparent
+            ">
+              dinheiro sozinho.
+            </span>
           </h1>
 
-          <div className="home-hero__cta">
-            <Button variant="primary" to="/login" className="me-3">
+          <div className="mt-[10px]">
+            <Button
+              variant="primary"
+              to="/login"
+              className="mr-3"
+            >
               Começar agora
             </Button>
           </div>
         </div>
       </section>
 
-      <section id="features" className="py-5">
-        <div className="container text-center">
-          <h2 className="home-section-title">
+      {/* RECURSOS */}
+      <section id="features" className="py-12">
+        <div className={`${CONTAINER} text-center`}>
+          <h2 className="text-[2rem] font-medium text-white">
             Por que escolher o <b>Quackly?</b>
           </h2>
-          <div className="row mt-5">
+
+          <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
             {FEATURES.map((feature) => (
-              <div className="col-md-4 mb-4" key={feature.title}>
+              <div key={feature.title} className="mb-4">
                 <Card variant="feature" {...feature} />
               </div>
             ))}
@@ -98,24 +143,71 @@ function Home() {
         </div>
       </section>
 
-      <section className="py-5">
-        <div className="container">
-          <div className="row align-items-center">
-            <div className="col-lg-6 position-relative mb-5 mb-lg-0">
-              <div className="home-phone">
-                <img src={patoNoCelular} alt="Pato no Celular" className="home-phone__img" />
+      {/* ORGANIZAÇÃO FINANCEIRA */}
+      <section className="py-12">
+        <div className={CONTAINER}>
+          <div className="
+            grid grid-cols-1 items-center gap-6
+            lg:grid-cols-2
+          ">
+            <div className="
+              relative mb-12
+              lg:mb-0
+            ">
+              <div className="
+                relative ml-0 mr-auto
+                max-w-[500px]
+                max-[991px]:mx-auto
+                max-[991px]:max-w-full
+              ">
+                <img
+                  src={patoNoCelular}
+                  alt="Pato no Celular"
+                  className="
+                    relative left-[-60px]
+                    z-[1] block w-full
+                    rounded-[40px] p-0
+                    max-[991px]:left-0
+                    max-[991px]:mx-auto
+                    max-[991px]:max-w-[320px]
+                  "
+                />
 
                 {TRANSACTIONS.map((item) => (
-                  <Card key={item.title} variant="floating" {...item} />
+                  <Card
+                    key={item.title}
+                    variant="floating"
+                    {...item}
+                  />
                 ))}
               </div>
             </div>
-            <div className="col-lg-6 ps-lg-5 text-white">
-              <h2 className="home-display-title">Surpresas na fatura? Comigo, não</h2>
-              <p className="home-description">
+
+            <div className="
+              text-white
+              lg:pl-12
+            ">
+              <h2 className="
+                mb-6 text-[clamp(2.2rem,5vw,3.5rem)]
+                font-bold leading-[1.1]
+                text-white
+                max-[991px]:mt-10
+                max-[991px]:text-center
+              ">
+                Surpresas na fatura? Comigo, não
+              </h2>
+
+              <p className="
+                mb-8 max-w-[450px]
+                text-[1.1rem] leading-[1.6]
+                text-white/70
+                max-[991px]:mx-auto
+                max-[991px]:text-center
+              ">
                 Eu sei como é abrir a fatura e não entender nada. Por isso eu organizo tudo e ainda te ensino
                 como melhorar sua gestão financeira.
               </p>
+
               <Button variant="pill" to="/login">
                 Quero Aprender
               </Button>
@@ -124,36 +216,85 @@ function Home() {
         </div>
       </section>
 
-      <section id="mentor" className="home-mentor">
-        <div className="container">
-          <div className="row align-items-center">
-            <div className="col-lg-6 pe-lg-5 text-white mb-5 mb-lg-0">
-              <h2 className="home-mentor__title">Seu novo mentor financeiro</h2>
-              <p className="home-mentor__text">
+      {/* MENTOR VIRTUAL */}
+      <section
+        id="mentor"
+        className="overflow-hidden py-[60px]"
+      >
+        <div className={CONTAINER}>
+          <div className="
+            grid grid-cols-1 items-center gap-6
+            lg:grid-cols-2
+          ">
+            <div className="
+              mb-12 text-white
+              lg:mb-0 lg:pr-12
+            ">
+              <h2 className="
+                mb-6 text-[clamp(2.5rem,5vw,3.8rem)]
+                font-bold leading-[1.1]
+                text-white
+                max-[991px]:mt-10
+                max-[991px]:text-center
+              ">
+                Seu novo mentor financeiro
+              </h2>
+
+              <p className="
+                mb-[35px] max-w-[480px]
+                text-[1.15rem] leading-[1.6]
+                text-white/70
+                max-[991px]:mx-auto
+                max-[991px]:mb-8
+                max-[991px]:text-center
+              ">
                 Esqueça as planilhas complicadas. Gerencie seu dinheiro de forma intuitiva através do seu pet
                 virtual. Cada decisão financeira correta faz ele crescer, e o seu saldo bancário também.
               </p>
+
               <Button variant="pill" to="/login">
                 Iniciar Jornada
               </Button>
             </div>
-            <div className="col-lg-6 d-flex justify-content-center">
+
+            <div className="flex justify-center">
               <img
                 src={notebookGrafico}
                 alt="Notebook com Dashboard Financeiro"
-                className="img-fluid home-mentor__img"
+                className="
+                  block h-auto max-w-full
+                  mx-auto
+                "
               />
             </div>
           </div>
         </div>
       </section>
 
-      <section id="pricing" className="home-pricing">
-        <div className="container">
-          <h2 className="home-pricing__heading">Benefícios</h2>
-          <p className="home-pricing__subtitle">Veja quais são os benefícios e diferenciais de usar o Quackly.</p>
+      {/* BENEFÍCIOS */}
+      <section className="py-20">
+        <div className={CONTAINER}>
+          <h2 className="
+            mb-4 text-center
+            text-[2rem] font-medium
+            text-white
+          ">
+            Benefícios
+          </h2>
 
-          <div className="home-pricing__grid">
+          <p className="
+            mb-8 text-center
+            text-base text-[#94a3b8]
+          ">
+            Veja quais são os benefícios e diferenciais de usar o Quackly.
+          </p>
+
+          <div className="
+            mt-12 grid
+            grid-cols-[repeat(auto-fit,minmax(300px,1fr))]
+            gap-8
+            max-[768px]:grid-cols-1
+          ">
             <Card
               variant="pricing"
               title="Quackly Standard"
