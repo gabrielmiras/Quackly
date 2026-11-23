@@ -4,6 +4,8 @@ import AuthLayout from '../layouts/AuthLayout.jsx';
 import Button from '../components/Button.jsx';
 import FormInput from '../components/FormInput.jsx';
 
+const API_URL = 'https://quackly-production.up.railway.app';
+
 function Login() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
@@ -26,7 +28,7 @@ function Login() {
     event.preventDefault();
     if (!validate()) return;
 
-    fetch('http://localhost:8080/usuarios/login', {
+    fetch(`${API_URL}/usuarios/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: form.email, senha: form.password }),

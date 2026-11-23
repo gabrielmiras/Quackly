@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {"https://quackly-project.vercel.app", "http://localhost:5173"})
 public class UsuarioController {
 
     @Autowired

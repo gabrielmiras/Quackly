@@ -12,6 +12,8 @@ const INITIAL_FORM = {
   acceptedTerms: false,
 };
 
+const API_URL = 'https://quackly-production.up.railway.app';
+
 function Cadastro() {
   const navigate = useNavigate();
   const [form, setForm] = useState(INITIAL_FORM);
@@ -40,7 +42,7 @@ function Cadastro() {
     event.preventDefault();
     if (!validate()) return;
 
-    fetch('http://localhost:8080/usuarios', {
+    fetch(`${API_URL}/usuarios`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nome: form.name, email: form.email, senha: form.password }),

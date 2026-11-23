@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/movimentacoes")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {"https://quackly-project.vercel.app", "http://localhost:5173"})
 public class MovimentacaoController {
 
     @Autowired
