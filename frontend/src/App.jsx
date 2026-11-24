@@ -1,11 +1,19 @@
 import { useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import {
+  Routes,
+  Route,
+  useLocation,
+  Navigate,
+} from 'react-router-dom';
+
 import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
 import Cadastro from './pages/Cadastro.jsx';
 import Aprendizado from './pages/Aprendizado.jsx';
 import Gestao from './pages/Gestao.jsx';
-import Historico from './pages/Historico.jsx';
+
+import DashboardLayout from './layouts/DashboardLayout.jsx';
+import Metas from './components/Metas.jsx';
 
 /**
  * O React Router troca a URL via pushState, e o navegador NÃO rola até a âncora (#metas)
@@ -17,12 +25,21 @@ function ScrollManager() {
   useEffect(() => {
     if (hash) {
       const target = document.getElementById(hash.slice(1));
+
       if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
         return;
       }
     }
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'instant',
+    });
   }, [pathname, hash]);
 
   return null;
@@ -32,13 +49,30 @@ function App() {
   return (
     <>
       <ScrollManager />
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
+
         <Route path="/aprendizado" element={<Aprendizado />} />
+
         <Route path="/gestao" element={<Gestao />} />
-        <Route path="/historico" element={<Historico />} />
+
+        <Route
+          path="/metas"
+          element={
+            <DashboardLayout>
+              <Metas />
+            </DashboardLayout>
+          }
+        />
+
+        {/* Compatibilidade com o endereço antigo do Histórico */}
+        <Route
+          path="/historico"
+          element={<Navigate to="/gestao#historico" replace />}
+        />
       </Routes>
     </>
   );

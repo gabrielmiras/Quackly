@@ -20,15 +20,15 @@ const NAV_GROUPS = [
       },
       {
         to: '/gestao',
+        hash: '#historico',
+        icon: History,
+        text: 'Histórico',
+      },
+      {
+        to: '/metas',
         hash: '#metas',
         icon: Trophy,
         text: 'Metas',
-      },
-      {
-        to: '/historico',
-        hash: '',
-        icon: History,
-        text: 'Histórico',
         isDefault: true,
       },
     ],
@@ -242,7 +242,6 @@ function Sidebar({ isOpen = false, onClose }) {
           ))}
         </nav>
 
-
         {/* Rodapé */}
         <div className="
           shrink-0 border-t border-white/[0.07]
@@ -262,7 +261,6 @@ function Sidebar({ isOpen = false, onClose }) {
             Sua jornada financeira
           </p>
         </div>
-
       </aside>
     </>
   );

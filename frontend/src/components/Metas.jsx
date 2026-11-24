@@ -216,7 +216,6 @@ function Metas() {
     <section
       id="metas"
       className="scroll-mt-[110px] text-[#142238]"
-      style={{ paddingTop: '64px' }}
     >
       {/* Cabeçalho */}
       <div className="mb-7 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">

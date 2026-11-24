@@ -1,10 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Wallet, TrendingUp, TrendingDown } from 'lucide-react';
+import {
+  Wallet,
+  TrendingUp,
+  TrendingDown,
+  ArrowUpRight,
+  ArrowDownRight,
+  PiggyBank,
+  Settings2,
+  X,
+} from 'lucide-react';
 
 import DashboardLayout from '../layouts/DashboardLayout.jsx';
-import Card from '../components/Card.jsx';
 import historicoService from '../services/historicoService.js';
-import Metas from '../components/Metas.jsx';
+import PeriodoFiltro from '../components/PeriodoFiltro.jsx';
+import Historico from './Historico.jsx';
 
 const CORES_DESPESAS = [
   '#2563eb',
@@ -25,22 +34,44 @@ function formatarMoeda(valor) {
   });
 }
 
-function calcularEconomia(itens) {
-  return itens.reduce((acc, item) => {
-    const valor = Number(item.valor) || 0;
+function formatarDataInput(data) {
+  const ano = data.getFullYear();
+  const mes = String(data.getMonth() + 1).padStart(2, '0');
+  const dia = String(data.getDate()).padStart(2, '0');
 
-    return item.tipo === 'ENTRADA'
-      ? acc + valor
-      : acc - valor;
-  }, 0);
+  return `${ano}-${mes}-${dia}`;
 }
 
+/*
+ * Interpreta datas sem fuso horário como datas locais.
+ * Isso evita que uma movimentação registrada à meia-noite
+ * seja deslocada para o dia anterior ou seguinte.
+ */
 function obterData(item) {
   if (!item.dataHora) return null;
 
-  const data = new Date(
-    String(item.dataHora).replace(' ', 'T')
+  const valor = String(item.dataHora).trim();
+
+  const partes = valor.match(
+    /^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/
   );
+
+  if (partes) {
+    const [, ano, mes, dia, hora = '0', minuto = '0', segundo = '0'] = partes;
+
+    const data = new Date(
+      Number(ano),
+      Number(mes) - 1,
+      Number(dia),
+      Number(hora),
+      Number(minuto),
+      Number(segundo)
+    );
+
+    return Number.isNaN(data.getTime()) ? null : data;
+  }
+
+  const data = new Date(valor);
 
   return Number.isNaN(data.getTime()) ? null : data;
 }
@@ -68,7 +99,7 @@ function gerarConicGradient(items) {
   return `conic-gradient(${stops.join(', ')})`;
 }
 
-/** Painel reutilizável de gráfico de rosca */
+/* Cartão de gráfico de rosca */
 function DonutChartCard({
   items,
   centerLabel,
@@ -77,6 +108,7 @@ function DonutChartCard({
   emptyMessage,
 }) {
   const temDados = items && items.length > 0;
+
   const gradient = temDados
     ? gerarConicGradient(items)
     : '#e2e8f0';
@@ -84,7 +116,6 @@ function DonutChartCard({
   return (
     <div className="
       relative flex h-auto min-w-0 flex-col
-      xl:h-full
       rounded-2xl border border-[#dbe3ec]
       bg-white p-6
       shadow-[0_6px_22px_rgba(20,34,56,0.07)]
@@ -95,13 +126,9 @@ function DonutChartCard({
           flex flex-1 flex-col items-center
           justify-center gap-7
           sm:flex-row sm:justify-around
-          xl:flex-col 2xl:flex-row
+          2xl:flex-row
         ">
-          {/* Gráfico circular */}
-          <div className="
-            flex shrink-0 items-center
-            justify-center
-          ">
+          <div className="flex shrink-0 items-center justify-center">
             <div
               className="
                 flex h-[180px] w-[180px]
@@ -114,13 +141,11 @@ function DonutChartCard({
               <div className="
                 flex h-[118px] w-[118px]
                 flex-col items-center justify-center
-                rounded-full bg-white
-                shadow-inner
+                rounded-full bg-white shadow-inner
               ">
                 <span className="
-                  text-xs font-bold
-                  uppercase tracking-wider
-                  text-[#475569]
+                  text-xs font-bold uppercase
+                  tracking-wider text-[#475569]
                 ">
                   {centerLabel}
                 </span>
@@ -135,11 +160,7 @@ function DonutChartCard({
             </div>
           </div>
 
-          {/* Legenda */}
-          <div className="
-            flex w-full min-w-0 flex-1
-            flex-col gap-3
-          ">
+          <div className="flex w-full min-w-0 flex-1 flex-col gap-3">
             {items.map((item) => (
               <div
                 key={item.label}
@@ -164,10 +185,7 @@ function DonutChartCard({
                   </span>
                 </div>
 
-                <strong className="
-                  shrink-0 text-sm font-bold
-                  text-[#142238]
-                ">
+                <strong className="shrink-0 text-sm font-bold text-[#142238]">
                   {item.value}
                 </strong>
               </div>
@@ -197,101 +215,263 @@ function DonutChartCard({
   );
 }
 
+/* Cartão de indicador financeiro */
+function IndicadorCard({ label, valor, tipo, descricao }) {
+  const configuracoes = {
+    entrada: {
+      Icon: ArrowUpRight,
+      cor: '#059669',
+      fundo: '#ecfdf5',
+    },
+    saida: {
+      Icon: ArrowDownRight,
+      cor: '#e11d48',
+      fundo: '#fff1f2',
+    },
+    saldo: {
+      Icon: PiggyBank,
+      cor: valor < 0 ? '#e11d48' : '#059669',
+      fundo: valor < 0 ? '#fff1f2' : '#ecfdf5',
+    },
+  };
+
+  const config = configuracoes[tipo];
+  const Icon = config.Icon;
+
+  return (
+    <div className="
+      flex min-w-0 flex-col gap-4
+      rounded-2xl border border-[#e2e8f0]
+      bg-white p-5
+      shadow-[0_1px_3px_rgba(0,0,0,0.05)]
+      transition-shadow hover:shadow-md
+      sm:p-6
+    ">
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-sm font-semibold text-[#64748b]">
+          {label}
+        </span>
+
+        <div
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+          style={{ backgroundColor: config.fundo, color: config.cor }}
+        >
+          <Icon size={21} strokeWidth={2.2} />
+        </div>
+      </div>
+
+      <div>
+        <strong
+          className="block break-words text-2xl font-bold"
+          style={{ color: config.cor }}
+        >
+          {formatarMoeda(valor)}
+        </strong>
+
+        <span className="mt-1 block text-xs text-[#94a3b8]">
+          {descricao}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function Gestao() {
   const [movimentacoes, setMovimentacoes] = useState([]);
   const [carregando, setCarregando] = useState(true);
+  const [configuracoesAbertas, setConfiguracoesAbertas] = useState(false);
+
+  // Filtro de período
+  const hoje = new Date();
+
+  const primeiroDiaMes = new Date(
+    hoje.getFullYear(),
+    hoje.getMonth(),
+    1
+  );
+
+  const [periodoSelecionado, setPeriodoSelecionado] = useState('mes');
+
+  const [periodoAplicado, setPeriodoAplicado] = useState({
+    tipo: 'mes',
+  });
+
+  const [dataInicio, setDataInicio] = useState(
+    formatarDataInput(primeiroDiaMes)
+  );
+
+  const [dataFim, setDataFim] = useState(
+    formatarDataInput(hoje)
+  );
+
+  const [erroPeriodo, setErroPeriodo] = useState('');
 
   useEffect(() => {
+    let ativo = true;
+
     historicoService
       .listar()
       .then((dados) => {
-        setMovimentacoes(dados || []);
+        if (ativo) {
+          setMovimentacoes(dados || []);
+        }
       })
       .catch((err) => {
         console.error('Erro ao carregar movimentações:', err);
       })
       .finally(() => {
-        setCarregando(false);
+        if (ativo) {
+          setCarregando(false);
+        }
       });
+
+    return () => {
+      ativo = false;
+    };
   }, []);
 
-  // Estatísticas financeiras
-  const stats = useMemo(() => {
+  function selecionarPeriodo(tipo) {
+    setPeriodoSelecionado(tipo);
+    setErroPeriodo('');
+
+    if (tipo !== 'personalizado') {
+      setPeriodoAplicado({ tipo });
+    }
+  }
+
+  function aplicarPeriodoPersonalizado() {
+    if (!dataInicio || !dataFim) {
+      setErroPeriodo('Selecione as duas datas.');
+      return false;
+    }
+
+    if (dataInicio > dataFim) {
+      setErroPeriodo('A data inicial não pode ser posterior à data final.');
+      return false;
+    }
+
+    setErroPeriodo('');
+
+    setPeriodoAplicado({
+      tipo: 'personalizado',
+      inicio: dataInicio,
+      fim: dataFim,
+    });
+
+    return true;
+  }
+
+  function alterarPeriodo(tipo) {
+    selecionarPeriodo(tipo);
+
+    if (tipo !== 'personalizado') {
+      setConfiguracoesAbertas(false);
+    }
+  }
+
+  function aplicarPeriodoEFechar() {
+    const aplicado = aplicarPeriodoPersonalizado();
+
+    if (aplicado) {
+      setConfiguracoesAbertas(false);
+    }
+  }
+
+  // Calcula o intervalo selecionado.
+  const intervalo = useMemo(() => {
     const agora = new Date();
-    const anoAtual = agora.getFullYear();
-    const mesAtual = agora.getMonth();
 
-    // Hoje e os seis dias anteriores
-    const inicioUltimos7Dias = new Date(agora);
-    inicioUltimos7Dias.setDate(agora.getDate() - 6);
-    inicioUltimos7Dias.setHours(0, 0, 0, 0);
+    const inicioHoje = new Date(
+      agora.getFullYear(),
+      agora.getMonth(),
+      agora.getDate()
+    );
 
-    const inicioMes = new Date(anoAtual, mesAtual, 1);
-    const inicioAno = new Date(anoAtual, 0, 1);
+    // Limite exclusivo: inclui todo o dia atual.
+    const fimExclusivo = new Date(
+      agora.getFullYear(),
+      agora.getMonth(),
+      agora.getDate() + 1
+    );
 
-    const movimentacoesAno = movimentacoes.filter((item) => {
-      const data = obterData(item);
-      return data && data >= inicioAno && data <= agora;
-    });
+    switch (periodoAplicado.tipo) {
+      case '7dias': {
+        const inicio = new Date(inicioHoje);
+        inicio.setDate(inicio.getDate() - 6);
 
-    const movimentacoesMes = movimentacoes.filter((item) => {
-      const data = obterData(item);
-      return data && data >= inicioMes && data <= agora;
-    });
+        return {
+          inicio,
+          fim: fimExclusivo,
+          descricao: 'Últimos 7 dias',
+        };
+      }
 
-    const movimentacoesUltimos7Dias = movimentacoes.filter((item) => {
+      case 'ano':
+        return {
+          inicio: new Date(agora.getFullYear(), 0, 1),
+          fim: fimExclusivo,
+          descricao: 'Este ano',
+        };
+
+      case 'personalizado': {
+        const [anoInicio, mesInicio, diaInicio] =
+          periodoAplicado.inicio.split('-').map(Number);
+
+        const [anoFim, mesFim, diaFim] =
+          periodoAplicado.fim.split('-').map(Number);
+
+        return {
+          inicio: new Date(
+            anoInicio,
+            mesInicio - 1,
+            diaInicio
+          ),
+          fim: new Date(
+            anoFim,
+            mesFim - 1,
+            diaFim + 1
+          ),
+          descricao: `${periodoAplicado.inicio.split('-').reverse().join('/')} a ${periodoAplicado.fim.split('-').reverse().join('/')}`,
+        };
+      }
+
+      case 'mes':
+      default:
+        return {
+          inicio: new Date(
+            agora.getFullYear(),
+            agora.getMonth(),
+            1
+          ),
+          fim: fimExclusivo,
+          descricao: 'Este mês',
+        };
+    }
+  }, [periodoAplicado]);
+
+  // Todas as informações da tela usam o mesmo intervalo.
+  const movimentacoesFiltradas = useMemo(() => {
+    return movimentacoes.filter((item) => {
       const data = obterData(item);
 
       return (
         data &&
-        data >= inicioUltimos7Dias &&
-        data <= agora
+        data >= intervalo.inicio &&
+        data < intervalo.fim
       );
     });
+  }, [movimentacoes, intervalo]);
 
-    const economizadoAno = calcularEconomia(movimentacoesAno);
-    const economizadoMes = calcularEconomia(movimentacoesMes);
-    const economizadoUltimos7Dias = calcularEconomia(
-      movimentacoesUltimos7Dias
-    );
-
-    const formatarCardValor = (valor) => (
-      <span
-        style={{
-          color: valor < 0 ? '#ef4444' : '#059669',
-          fontWeight: 700,
-        }}
-      >
-        {formatarMoeda(valor)}
-      </span>
-    );
-
-    return [
-      {
-        label: 'Este ano',
-        value: formatarCardValor(economizadoAno),
-      },
-      {
-        label: 'Este mês',
-        value: formatarCardValor(economizadoMes),
-      },
-      {
-        label: 'Últimos 7 dias',
-        value: formatarCardValor(economizadoUltimos7Dias),
-      },
-    ];
-  }, [movimentacoes]);
-
-  // Balanço geral: entradas e saídas
+  // Entradas, saídas e saldo do período.
   const balanco = useMemo(() => {
-    const totalEntradas = movimentacoes
+    const totalEntradas = movimentacoesFiltradas
       .filter((item) => item.tipo === 'ENTRADA')
       .reduce(
         (acc, item) => acc + (Number(item.valor) || 0),
         0
       );
 
-    const totalSaidas = movimentacoes
+    const totalSaidas = movimentacoesFiltradas
       .filter((item) => item.tipo === 'SAIDA')
       .reduce(
         (acc, item) => acc + (Number(item.valor) || 0),
@@ -326,11 +506,11 @@ function Gestao() {
       totalSaidas,
       saldo,
     };
-  }, [movimentacoes]);
+  }, [movimentacoesFiltradas]);
 
-  // Despesas agrupadas por descrição
+  // Despesas agrupadas por descrição.
   const ondeGastei = useMemo(() => {
-    const saidas = movimentacoes.filter(
+    const saidas = movimentacoesFiltradas.filter(
       (item) => item.tipo === 'SAIDA'
     );
 
@@ -348,53 +528,162 @@ function Gestao() {
         (mapaSaidas[nome] || 0) + (Number(item.valor) || 0);
     });
 
-    const itens = Object.entries(mapaSaidas).map(
-      ([label, valor], index) => ({
+    const itens = Object.entries(mapaSaidas)
+      .map(([label, valor], index) => ({
         label,
         valorNum: valor,
         value: formatarMoeda(valor),
         color: CORES_DESPESAS[index % CORES_DESPESAS.length],
-      })
-    );
+      }))
+      .sort((a, b) => b.valorNum - a.valorNum);
 
     return {
       itens,
       totalSaidas,
     };
-  }, [movimentacoes]);
+  }, [movimentacoesFiltradas]);
 
   const estaNegativo = balanco.saldo < 0;
 
   return (
     <DashboardLayout>
-      {/* Visão Geral */}
       <section
         id="gerenciamento"
         className="mb-[55px] scroll-mt-[110px] text-[#1e293b]"
       >
-        <div className="mb-6">
-          <h1 className="mb-1 text-[1.8rem] font-bold">
-            Visão Geral
-          </h1>
+        {/* Cabeçalho e botão de configurações */}
+        <div className="mb-8 flex items-center justify-between gap-4">
+          <div>
+            <h1 className="mb-1 text-[1.8rem] font-bold">
+              Visão Geral
+            </h1>
 
-          <p className="text-sm text-[#64748b]">
-            Acompanhe sua saúde financeira.
-          </p>
+            <p className="text-sm text-[#64748b]">
+              Acompanhe sua saúde financeira.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setConfiguracoesAbertas(true)}
+            aria-label="Configurações da análise"
+            title="Configurações da análise"
+            className="
+              flex h-11 w-11 shrink-0 items-center justify-center
+              gestao-settings-button
+              rounded-xl border border-[#d5dee9]
+              bg-white text-[#334e70]
+              transition-all duration-200
+              hover:bg-[#f1f5f9]
+              hover:-translate-y-0.5
+            "
+          >
+            <Settings2 size={21} />
+          </button>
         </div>
 
-        {/* Estatísticas */}
+        {/* Modal de configurações */}
+        {configuracoesAbertas && (
+          <div
+            className="
+              fixed inset-0 z-[1100]
+              flex items-center justify-center
+              bg-[#081426]/70 p-4
+              backdrop-blur-sm
+            "
+            onMouseDown={(event) => {
+              if (event.target === event.currentTarget) {
+                setConfiguracoesAbertas(false);
+              }
+            }}
+          >
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="titulo-configuracoes"
+              className="
+                w-full max-w-[480px]
+                rounded-2xl border border-[#d5dee9]
+                bg-white p-6
+                shadow-2xl
+              "
+            >
+              <div className="mb-6 flex items-center justify-between gap-3">
+                <div>
+                  <h2
+                    id="titulo-configuracoes"
+                    className="text-xl font-bold text-[#142238]"
+                  >
+                    Configurações da análise
+                  </h2>
+
+                  <p className="mt-1 text-sm text-[#64748b]">
+                    Personalize o período dos seus indicadores.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setConfiguracoesAbertas(false)}
+                  aria-label="Fechar configurações"
+                  className="
+                    flex h-9 w-9 shrink-0 items-center justify-center
+                    rounded-lg text-[#64748b]
+                    transition-colors hover:bg-[#f1f5f9]
+                  "
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <PeriodoFiltro
+                periodoSelecionado={periodoSelecionado}
+                onPeriodoChange={alterarPeriodo}
+                dataInicio={dataInicio}
+                onDataInicioChange={setDataInicio}
+                dataFim={dataFim}
+                onDataFimChange={setDataFim}
+                onAplicar={aplicarPeriodoEFechar}
+                erro={erroPeriodo}
+                layout="vertical"
+              />
+
+              <p className="mt-4 text-xs text-[#64748b]">
+                O período selecionado será aplicado aos indicadores e gráficos do Gerenciamento.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Indicadores */}
         <div className="
           mb-10 grid grid-cols-1 gap-5
-          sm:grid-cols-2
-          xl:grid-cols-3
+          sm:grid-cols-2 xl:grid-cols-3
         ">
-          {stats.map((stat) => (
-            <Card
-              key={stat.label}
-              variant="stat"
-              {...stat}
-            />
-          ))}
+          <IndicadorCard
+            label="Entradas"
+            valor={balanco.totalEntradas}
+            tipo="entrada"
+            descricao="Total recebido no período"
+          />
+
+          <IndicadorCard
+            label="Saídas"
+            valor={balanco.totalSaidas}
+            tipo="saida"
+            descricao="Total gasto no período"
+          />
+
+          <IndicadorCard
+            label="Saldo"
+            valor={balanco.saldo}
+            tipo="saldo"
+            descricao={
+              estaNegativo
+                ? 'Resultado negativo no período'
+                : 'Resultado positivo no período'
+            }
+          />
         </div>
 
         {/* Análise financeira */}
@@ -405,6 +694,10 @@ function Gestao() {
 
           <p className="mt-1 text-sm text-[#64748b]">
             Entenda de onde vem e para onde vai seu dinheiro.
+          </p>
+
+          <p className="mt-1 text-xs font-semibold text-[#94a3b8]">
+            Exibindo dados de: {intervalo.descricao}
           </p>
         </div>
 
@@ -424,14 +717,14 @@ function Gestao() {
 
             <DonutChartCard
               items={balanco.itens}
-              centerLabel={
-                balanco.saldo >= 0 ? 'Economia' : 'No vermelho'
-              }
+              centerLabel={estaNegativo ? 'No vermelho' : 'Saldo'}
               centerValue={formatarMoeda(balanco.saldo)}
-              centerColor={
-                balanco.saldo >= 0 ? '#10b981' : '#ef4444'
+              centerColor={estaNegativo ? '#ef4444' : '#10b981'}
+              emptyMessage={
+                carregando
+                  ? 'Carregando movimentações...'
+                  : 'Nenhuma entrada ou saída encontrada neste período.'
               }
-              emptyMessage="Nenhuma entrada ou saída cadastrada ainda."
             />
           </div>
 
@@ -450,16 +743,18 @@ function Gestao() {
               centerLabel="Total gasto"
               centerValue={formatarMoeda(ondeGastei.totalSaidas)}
               centerColor="#ef4444"
-              emptyMessage="Nenhuma despesa cadastrada ainda."
+              emptyMessage={
+                carregando
+                  ? 'Carregando movimentações...'
+                  : 'Nenhuma despesa encontrada neste período.'
+              }
             />
           </div>
         </div>
       </section>
 
-      {/* Metas */}
-      <div className="mb-[20px]">
-        <Metas />
-      </div>
+      {/* Histórico de movimentações */}
+      <Historico />
     </DashboardLayout>
   );
 }

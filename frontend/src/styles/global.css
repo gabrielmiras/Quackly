@@ -413,3 +413,430 @@ a {
   text-decoration: underline;
 }
 
+/* =========================================
+   TEMA DO DASHBOARD - QUACKLY
+========================================= */
+
+/* Tema claro */
+.dash-page {
+  --dash-bg: #f4f7f6;
+  --dash-surface: #ffffff;
+  --dash-surface-soft: #f8fafc;
+  --dash-text: #142238;
+  --dash-text-secondary: #475569;
+  --dash-text-muted: #64748b;
+  --dash-border: #d5dee9;
+  --dash-input-bg: #ffffff;
+  --dash-input-border: #dbe3ec;
+  --dash-header-bg: #ffffff;
+  --dash-shadow: 0 4px 16px rgba(20, 34, 56, 0.07);
+
+  background-color: var(--dash-bg);
+  color: var(--dash-text);
+}
+
+/* Tema escuro */
+.dash-page[data-theme="dark"] {
+  --dash-bg: #0d192b;
+  --dash-surface: #172840;
+  --dash-surface-soft: #1d314c;
+  --dash-text: #e8eef7;
+  --dash-text-secondary: #c0ccdc;
+  --dash-text-muted: #94a8c1;
+  --dash-border: #30445f;
+  --dash-input-bg: #102139;
+  --dash-input-border: #3a506d;
+  --dash-header-bg: #14243a;
+  --dash-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+}
+
+/* Estrutura principal */
+.dash-page .dash-main {
+  background-color: var(--dash-bg);
+}
+
+.dash-page .dash-header {
+  background-color: var(--dash-header-bg);
+  border-bottom-color: var(--dash-border);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.dash-page .dash-content {
+  background-color: var(--dash-bg);
+  color: var(--dash-text);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dash-page .dash-header__user {
+  color: var(--dash-text);
+}
+
+.dash-page .dash-header__avatar {
+  background-color: var(--dash-surface-soft);
+  color: var(--dash-text);
+}
+
+/* Ações do cabeçalho */
+.dash-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.dash-theme-toggle {
+  display: flex;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--dash-border);
+  border-radius: 50%;
+  background-color: var(--dash-surface);
+  color: var(--dash-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dash-theme-toggle:hover {
+  background-color: var(--dash-surface-soft);
+  transform: translateY(-1px);
+}
+
+.dash-theme-toggle:focus-visible {
+  outline: 2px solid #4775bd;
+  outline-offset: 3px;
+}
+
+/* Superfícies que eram brancas */
+.dash-page[data-theme="dark"] [class~="bg-white"] {
+  background-color: var(--dash-surface) !important;
+}
+
+/* Superfícies secundárias */
+.dash-page[data-theme="dark"] [class~="bg-[#f8fafc]"],
+.dash-page[data-theme="dark"] [class~="bg-[#f1f5f9]"],
+.dash-page[data-theme="dark"] [class~="bg-[#f2f5f8]"],
+.dash-page[data-theme="dark"] [class~="bg-[#edf1f5]"],
+.dash-page[data-theme="dark"] [class~="bg-[#eaf0f7]"] {
+  background-color: var(--dash-surface-soft) !important;
+}
+
+/* Textos principais */
+.dash-page[data-theme="dark"] [class~="text-[#142238]"],
+.dash-page[data-theme="dark"] [class~="text-[#1e293b]"],
+.dash-page[data-theme="dark"] [class~="text-[#334155]"] {
+  color: var(--dash-text) !important;
+}
+
+/* Textos secundários */
+.dash-page[data-theme="dark"] [class~="text-[#475569]"],
+.dash-page[data-theme="dark"] [class~="text-[#526780]"],
+.dash-page[data-theme="dark"] [class~="text-[#64748b]"] {
+  color: var(--dash-text-secondary) !important;
+}
+
+/* Bordas */
+.dash-page[data-theme="dark"] [class~="border-[#d5dee9]"],
+.dash-page[data-theme="dark"] [class~="border-[#dbe2ea]"],
+.dash-page[data-theme="dark"] [class~="border-[#dbe3ec]"],
+.dash-page[data-theme="dark"] [class~="border-[#e2e8f0]"],
+.dash-page[data-theme="dark"] [class~="border-[#f1f5f9]"],
+.dash-page[data-theme="dark"] [class~="border-[#cbd5e1]"] {
+  border-color: var(--dash-border) !important;
+}
+
+/* Campos de formulário */
+.dash-page[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
+.dash-page[data-theme="dark"] select,
+.dash-page[data-theme="dark"] textarea {
+  background-color: var(--dash-input-bg);
+  border-color: var(--dash-input-border);
+  color: var(--dash-text);
+}
+
+.dash-page[data-theme="dark"] input::placeholder,
+.dash-page[data-theme="dark"] textarea::placeholder {
+  color: var(--dash-text-muted);
+}
+
+/* Tabelas */
+.dash-page[data-theme="dark"] table {
+  color: var(--dash-text);
+}
+
+.dash-page[data-theme="dark"] th,
+.dash-page[data-theme="dark"] td {
+  border-color: var(--dash-border);
+}
+
+/* Modais */
+.dash-page[data-theme="dark"] [class~="bg-white"].fixed,
+.dash-page[data-theme="dark"] .fixed [class~="bg-white"] {
+  background-color: var(--dash-surface) !important;
+}
+
+/* Transições */
+.dash-page .dash-content,
+.dash-page .dash-header,
+.dash-page .dash-theme-toggle {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+/* =========================================
+   AJUSTES DE METAS E FILTROS
+========================================= */
+
+.dash-page[data-theme="dark"] [class~="bg-[#f8fafc]"],
+.dash-page[data-theme="dark"] [class~="bg-[#f1f5f9]"],
+.dash-page[data-theme="dark"] [class~="bg-[#f2f5f8]"],
+.dash-page[data-theme="dark"] [class~="bg-[#edf1f5]"],
+.dash-page[data-theme="dark"] [class~="bg-[#eaf0f7]"] {
+  background-color: var(--dash-surface-soft) !important;
+}
+
+.dash-page[data-theme="dark"] [class~="border-dashed"] {
+  border-color: var(--dash-border) !important;
+}
+
+.dash-page[data-theme="dark"] [class~="hover:bg-[#f1f5f9]"]:hover,
+.dash-page[data-theme="dark"] [class~="hover:bg-[#f1f5f9]"]:focus-visible {
+  background-color: var(--dash-surface-soft) !important;
+}
+
+.dash-page[data-theme="dark"] [class~="hover:text-[#142238]"]:hover {
+  color: var(--dash-text) !important;
+}
+
+.dash-page[data-theme="dark"] select option {
+  background-color: var(--dash-surface);
+  color: var(--dash-text);
+}
+
+.dash-page[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+/* Cartões e modais */
+.dash-page[data-theme="dark"] article,
+.dash-page[data-theme="dark"] .dash-card {
+  border-color: var(--dash-border);
+}
+
+.dash-page[data-theme="dark"] .fixed [class~="bg-white"] {
+  background-color: var(--dash-surface) !important;
+}
+
+/* Mantém os avisos de erro e os indicadores financeiros */
+.dash-page[data-theme="dark"] .text-red-600,
+.dash-page[data-theme="dark"] [class~="text-[#dc2626]"] {
+  color: #fb7185 !important;
+}
+.dash-page[data-theme="dark"] [class~="bg-[#edf1f6]"] {
+  background-color: var(--dash-surface-soft) !important;
+  color: var(--dash-text-secondary) !important;
+}
+
+/* =========================================
+   TEMA ESCURO - HISTÓRICO
+========================================= */
+
+/* Campos com estilos inline do FormInput */
+.dash-page[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
+.dash-page[data-theme="dark"] select,
+.dash-page[data-theme="dark"] textarea {
+  background-color: var(--dash-input-bg) !important;
+  border-color: var(--dash-input-border) !important;
+  color: var(--dash-text) !important;
+}
+
+/* Texto dos campos */
+.dash-page[data-theme="dark"] input::placeholder,
+.dash-page[data-theme="dark"] textarea::placeholder {
+  color: var(--dash-text-muted) !important;
+}
+
+/* Cartões de movimentações */
+.dash-page[data-theme="dark"] [class~="bg-[#fffbeb]"] {
+  background-color: #3a321d !important;
+}
+
+.dash-page[data-theme="dark"] [class~="border-[#e2e8f0]"],
+.dash-page[data-theme="dark"] [class~="border-[#dbe3ec]"] {
+  border-color: var(--dash-border) !important;
+}
+
+/* Cabeçalho e linhas da tabela */
+.dash-page[data-theme="dark"] th {
+  color: var(--dash-text-secondary) !important;
+  border-color: var(--dash-border) !important;
+}
+
+.dash-page[data-theme="dark"] td {
+  border-color: var(--dash-border) !important;
+}
+
+.dash-page[data-theme="dark"] [class~="hover:bg-[#f8fafc]"]:hover {
+  background-color: var(--dash-surface-soft) !important;
+}
+
+/* Botões brancos de cancelar e excluir */
+.dash-page[data-theme="dark"] button[class~="bg-white"],
+.dash-page[data-theme="dark"] a[class~="bg-white"] {
+  background-color: var(--dash-surface-soft) !important;
+}
+
+/* Avisos e mensagens */
+.dash-page[data-theme="dark"] [class~="bg-[#f0fdf4]"] {
+  background-color: #153b32 !important;
+}
+
+.dash-page[data-theme="dark"] [class~="border-[#bbf7d0]"] {
+  border-color: #24634d !important;
+}
+
+/* Mantém a distinção visual entre entrada e saída */
+.dash-page[data-theme="dark"] [class~="bg-[#dcfce7]"] {
+  background-color: #164333 !important;
+}
+
+.dash-page[data-theme="dark"] [class~="bg-[#ffe4e6]"] {
+  background-color: #4a2633 !important;
+}
+
+.dash-page[data-theme="dark"] [class~="text-[#166534]"] {
+  color: #86efac !important;
+}
+
+.dash-page[data-theme="dark"] [class~="text-[#9f1239]"] {
+  color: #fda4af !important;
+}
+
+/* Botão de cancelar edição */
+.dash-page[data-theme="dark"] [class~="border-[#fecaca]"] {
+  border-color: #713442 !important;
+}
+
+.dash-page[data-theme="dark"] [class~="text-[#dc2626]"],
+.dash-page[data-theme="dark"] [class~="text-[#b91c1c]"] {
+  color: #fb7185 !important;
+}
+
+/* Histórico: seletor de entrada e saída no tema escuro */
+
+/* Entrada */
+.dash-page[data-theme="dark"] select[class~="bg-[#f0fdf4]"] {
+  background-color: #153b32 !important;
+  border-color: #24634d !important;
+  color: #86efac !important;
+}
+
+/* Saída */
+.dash-page[data-theme="dark"] select[class~="bg-[#fff1f2]"] {
+  background-color: #4a2633 !important;
+  border-color: #713442 !important;
+  color: #fda4af !important;
+}
+
+/* =========================================
+   AJUSTES FINAIS DOS COMPONENTES
+========================================= */
+
+/* Botões de ação */
+.dash-page[data-theme="dark"] [class~="bg-[#23385d]"] {
+  background-color: #29466c;
+}
+
+.dash-page[data-theme="dark"] [class~="hover:bg-[#304b75]"]:hover {
+  background-color: #365780 !important;
+}
+
+/* Botão de aplicar período */
+.dash-page[data-theme="dark"] [class~="bg-[#192841]"] {
+  background-color: #29466c !important;
+}
+
+/* Foco dos campos */
+.dash-page[data-theme="dark"] input:focus,
+.dash-page[data-theme="dark"] select:focus,
+.dash-page[data-theme="dark"] textarea:focus {
+  border-color: #628bc1 !important;
+}
+
+/* Ícones dos campos de data */
+.dash-page[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator,
+.dash-page[data-theme="dark"] input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+/* Botões dourados permanecem dourados */
+.dash-page[data-theme="dark"] button[class~="bg-[#eab308]"] {
+  background-color: #eab308 !important;
+  color: #000000 !important;
+}
+
+/* Paginação do histórico */
+.dash-page[data-theme="dark"] [class~="border-[#d5dee9]"] {
+  border-color: var(--dash-border) !important;
+}
+
+.dash-page[data-theme="dark"] [class~="bg-white"] {
+  background-color: var(--dash-surface) !important;
+}
+
+.dash-page[data-theme="dark"] [class~="text-[#334155]"] {
+  color: var(--dash-text-secondary) !important;
+}
+
+.dash-page[data-theme="dark"] [class~="hover:bg-[#f1f5f9]"]:hover {
+  background-color: var(--dash-surface-soft) !important;
+}
+
+/* Modal de configurações da análise */
+.dash-page[data-theme="dark"] [role="dialog"] {
+  background-color: var(--dash-surface);
+  border-color: var(--dash-border);
+}
+
+.dash-page[data-theme="dark"] [role="dialog"] h2 {
+  color: var(--dash-text);
+}
+
+.dash-page[data-theme="dark"] [role="dialog"] p {
+  color: var(--dash-text-secondary);
+}
+
+.dash-page[data-theme="dark"] [role="dialog"] button {
+  color: var(--dash-text-secondary);
+}
+
+.dash-page[data-theme="dark"] [role="dialog"] button:hover {
+  background-color: var(--dash-surface-soft);
+}
+
+/* Botão de configurações no tema escuro */
+.dash-page[data-theme="dark"] .gestao-settings-button {
+  background-color: #23385d !important;
+  border-color: #3b5273 !important;
+  color: #f1f5f9 !important;
+}
+
+.dash-page[data-theme="dark"] .gestao-settings-button:hover {
+  background-color: #304b75 !important;
+  color: #ffffff !important;
+}
+
+/* Ícone de abrir a sidebar no tema escuro */
+.dash-page[data-theme="dark"] .dash-menu-button {
+  color: #f1f5f9 !important;
+  background-color: transparent;
+}
+
+/* Efeito ao passar o mouse */
+.dash-page[data-theme="dark"] .dash-menu-button:hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.08);
+}
